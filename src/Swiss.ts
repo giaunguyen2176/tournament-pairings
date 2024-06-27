@@ -26,7 +26,6 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
     if (colors) {
         playerArray.filter(p => !p.hasOwnProperty('colors')).forEach(p => p.colors = []);
     }
-    playerArray = shuffle(playerArray);
     playerArray.forEach((p, i) => p.index = i);
     const scoreGroups = [...new Set(playerArray.map(p => p.score))].sort((a, b) => a - b);
     const scoreSums = [...new Set(scoreGroups.map((s, i, a) => {
@@ -75,7 +74,7 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
                         wt += 2 / Math.log(4 - Math.abs(oppScore));
                      } 
                 } else {
-                    wt += 5 / (4 * Math.log10(6 - Math.abs(colorScore - oppScore)));
+                    wt += 5 / (4 * Math.log10(10 - Math.abs(colorScore - oppScore)));
                 }
             }
             if ((curr.hasOwnProperty('receivedBye') && curr.receivedBye) || (opp.hasOwnProperty('receivedBye') && opp.receivedBye)) {
