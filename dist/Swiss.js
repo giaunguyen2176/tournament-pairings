@@ -77,6 +77,9 @@ export function Swiss(players, round, rated = false, colors = false) {
             pairs.push([curr.index, opp.index, wt]);
         }
     }
+    if (pairs.length === 0) {
+        return [];
+    }
     const blossomPairs = blossom(pairs, true);
     let playerCopy = [...playerArray];
     let byeArray = [];

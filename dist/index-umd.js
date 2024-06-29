@@ -1218,6 +1218,9 @@
                 pairs.push([curr.index, opp.index, wt]);
             }
         }
+        if (pairs.length === 0) {
+            return [];
+        }
         const blossomPairs = blossom$1(pairs, true);
         let playerCopy = [...playerArray];
         let byeArray = [];

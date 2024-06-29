@@ -1,6 +1,5 @@
 import blossom from 'edmonds-blossom-fixed';
 import { Match } from './Match.js';
-import { shuffle } from './Shuffle.js';
 
 interface Player {
     id: string | number,
@@ -83,6 +82,11 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
             pairs.push([curr.index, opp.index, wt]);
         }
     }
+
+    if (pairs.length === 0) {
+        return [];
+    }
+
     const blossomPairs = blossom(pairs, true);
     let playerCopy = [...playerArray];
     let byeArray = [];
