@@ -1164,44 +1164,161 @@
                 }
                 return sums;
             }).flat())].sort((a, b) => a - b);
+        const scoreGroupPlayers = scoreGroups.reduce((sgps, sg) => {
+            sgps[sg] = playerArray.filter((p) => p.score === sg);
+            return sgps;
+        }, {});
+        console.log("score sums", scoreSums);
+        console.log("score groups", scoreGroups);
+        console.log("scoreGroupPlayers", scoreGroupPlayers);
         let pairs = [];
         for (let i = 0; i < playerArray.length; i++) {
             const curr = playerArray[i];
             const next = playerArray.slice(i + 1);
-            const sorted = rated ? [...next].sort((a, b) => Math.abs(curr.rating - a.rating) - Math.abs(curr.rating - b.rating)) : [];
+            const sorted = rated
+                ? [...next].sort((a, b) => Math.abs(curr.rating - a.rating) -
+                    Math.abs(curr.rating - b.rating))
+                : [];
+            // sort rank from high to low 
+            const reversedScoreGroups = [...scoreGroups].reverse();
+            // find higher score groups
+            const higherScoreGroups = reversedScoreGroups.filter((sg) => sg > curr.score);
+            console.debug("higherScoreGroups", higherScoreGroups);
+            // we combine ranks with an odd number of players into a group and pair them together
+            // after that we don't need to care for players within these score groups anymore
+            // so set the threshold to exclude those score groups  
+            // for initial, use 999 to not exlucde anything, then find the threshold to look for players only in lower score groups
+            let upperThreshold = 999;
+            let upperSum = 0;
+            for (let k = 0; k < higherScoreGroups.length; k++) {
+                const sg = reversedScoreGroups[k];
+                const count = playerArray.filter((p) => p.score === sg).length;
+                upperSum += count;
+                if (upperSum % 2 === 0) {
+                    // lower the score group to find upper threshold if it's still > the current's score
+                    upperThreshold = sg;
+                    if (sg > higherScoreGroups.at(-1)) {
+                        upperSum = 0;
+                    }
+                }
+            }
+            const belowThresholdScoreGroups = scoreGroups.filter((sg) => sg >= curr.score && sg < upperThreshold);
+            const playerCount = belowThresholdScoreGroups.reduce((count, sg) => {
+                count = count + scoreGroupPlayers[sg].length;
+                return count;
+            }, 0);
+            console.debug("score, upperThreshold, playerCount", curr.score, upperThreshold, playerCount);
             for (let j = 0; j < next.length; j++) {
                 const opp = next[j];
-                if (curr.hasOwnProperty('avoid') && curr.avoid.includes(opp.id)) {
+                if (curr.hasOwnProperty("avoid") && curr.avoid.includes(opp.id)) {
                     continue;
                 }
-                let wt = 14 * Math.log10(scoreSums.findIndex(s => s === curr.score + opp.score) + 1);
-                const scoreGroupDiff = Math.abs(scoreGroups.findIndex(s => s === curr.score) - scoreGroups.findIndex(s => s === opp.score));
-                wt += scoreGroupDiff < 2 ? 3 / Math.log10(scoreGroupDiff + 2) : 1 / Math.log10(scoreGroupDiff + 2);
-                if (scoreGroupDiff === 1 && curr.hasOwnProperty('pairedUpDown') && curr.pairedUpDown === false && opp.hasOwnProperty('pairedUpDown') && opp.pairedUpDown === false) {
+                // prioritize pair with higher total score
+                let wt = 14 *
+                    Math.log10(scoreSums.findIndex((s) => s === curr.score + opp.score) + 1);
+                // prioritize scoreGroupDiff < 2, over scoreGroupDiff >= 2
+                const scoreGroupDiff = Math.abs(scoreGroups.findIndex((s) => s === curr.score) -
+                    scoreGroups.findIndex((s) => s === opp.score));
+                if (scoreGroupDiff < 2) {
+                    // basically prioritize pairs with closer scores (maximum different rank is 0 or 1)
+                    if (scoreGroupDiff === 0) {
+                        // same score group
+                        if (scoreGroupPlayers[curr.score].length >= 3) {
+                            // if group has many players, prioritize within the same score group first
+                            wt += 4 / Math.log10(scoreGroupDiff + 2);
+                        }
+                        else {
+                            wt += 3 / Math.log10(scoreGroupDiff + 2);
+                        }
+                    }
+                    else {
+                        // different score group, but distance is only 1
+                        if (playerCount % 2 === 0) {
+                            // number of players in the higher rank is even
+                            if (playerCount === 2) {
+                                // there is exactly 2 players in above score group
+                                // if the 2 players have already played each other
+                                // then, prioritize to match current player with player in a differernt rank
+                                // and because players are sorted from high score to low score
+                                // that mean to prioritize to match current player with player in lower rank
+                                if (!scoreGroupPlayers[curr.score] ||
+                                    scoreGroupPlayers[curr.score].length < 2) {
+                                    wt += 2 / Math.log10(scoreGroupDiff + 2);
+                                }
+                                else {
+                                    const player1 = scoreGroupPlayers[curr.score][0];
+                                    const player2 = scoreGroupPlayers[curr.score][1];
+                                    if (player1.avoid.includes(player2.id)) {
+                                        wt += 5 / Math.log10(scoreGroupDiff + 2);
+                                    }
+                                    else {
+                                        wt += 2 / Math.log10(scoreGroupDiff + 2);
+                                    }
+                                }
+                            }
+                            else {
+                                wt += 2 / Math.log10(scoreGroupDiff + 2);
+                            }
+                        }
+                        else {
+                            // if the slice of multiple groups has odd number of players
+                            // prioritize pairs with different score (shifting to next group)
+                            wt += 5 / Math.log10(scoreGroupDiff + 2);
+                        }
+                    }
+                }
+                else if (scoreGroupDiff < 3) {
+                    // different rank is 2
+                    const players = playerArray
+                        .filter((p) => p.score > opp.score && p.score <= curr.score)
+                        .map((p) => p.id);
+                    const pairable = players.find((id) => id !== curr.id && !curr.avoid.includes(id));
+                    if (pairable) {
+                        wt += Math.log10(scoreGroupDiff + 2);
+                    }
+                    else {
+                        // if can not pair with anyone between curr.score & opp.score, prioritize it more
+                        wt += 6 / Math.log10(scoreGroupDiff + 2);
+                    }
+                }
+                else {
+                    // do not allow pairs with different rank >= 3
+                    continue;
+                }
+                if (scoreGroupDiff === 1 &&
+                    curr.hasOwnProperty("pairedUpDown") &&
+                    curr.pairedUpDown === false &&
+                    opp.hasOwnProperty("pairedUpDown") &&
+                    opp.pairedUpDown === false) {
                     wt += 1.2;
                 }
                 if (rated) {
-                    wt += (Math.log2(sorted.length) - Math.log2(sorted.findIndex(p => p.id === opp.id) + 1)) / 3;
+                    wt +=
+                        (Math.log2(sorted.length) -
+                            Math.log2(sorted.findIndex((p) => p.id === opp.id) + 1)) /
+                            3;
                 }
                 if (colors) {
-                    const colorScore = curr.colors.reduce((sum, color) => color === 'w' ? sum + 1 : sum - 1, 0);
-                    const oppScore = opp.colors.reduce((sum, color) => color === 'w' ? sum + 1 : sum - 1, 0);
-                    if (curr.colors.length > 1 && curr.colors.slice(-2).join('') === 'ww') {
-                        if (opp.colors.slice(-2).join('') === 'ww') {
+                    const colorScore = curr.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
+                    const oppScore = opp.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
+                    if (curr.colors.length > 1 &&
+                        curr.colors.slice(-2).join("") === "ww") {
+                        if (opp.colors.slice(-2).join("") === "ww") {
                             continue;
                         }
-                        else if (opp.colors.slice(-2).join('') === 'bb') {
+                        else if (opp.colors.slice(-2).join("") === "bb") {
                             wt += 7;
                         }
                         else {
                             wt += 2 / Math.log(4 - Math.abs(oppScore));
                         }
                     }
-                    else if (curr.colors.length > 1 && curr.colors.slice(-2).join('') === 'bb') {
-                        if (opp.colors.slice(-2).join('') === 'bb') {
+                    else if (curr.colors.length > 1 &&
+                        curr.colors.slice(-2).join("") === "bb") {
+                        if (opp.colors.slice(-2).join("") === "bb") {
                             continue;
                         }
-                        else if (opp.colors.slice(-2).join('') === 'ww') {
+                        else if (opp.colors.slice(-2).join("") === "ww") {
                             wt += 8;
                         }
                         else {
@@ -1212,7 +1329,8 @@
                         wt += 5 / (4 * Math.log10(10 - Math.abs(colorScore - oppScore)));
                     }
                 }
-                if ((curr.hasOwnProperty('receivedBye') && curr.receivedBye) || (opp.hasOwnProperty('receivedBye') && opp.receivedBye)) {
+                if ((curr.hasOwnProperty("receivedBye") && curr.receivedBye) ||
+                    (opp.hasOwnProperty("receivedBye") && opp.receivedBye)) {
                     wt *= 1.5;
                 }
                 pairs.push([curr.index, opp.index, wt]);
@@ -1221,6 +1339,8 @@
         if (pairs.length === 0) {
             return [];
         }
+        console.log("pairings input players", playerArray);
+        console.log("pairings pairs", pairs);
         const blossomPairs = blossom$1(pairs, true);
         let playerCopy = [...playerArray];
         let byeArray = [];
