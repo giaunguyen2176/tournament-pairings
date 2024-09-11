@@ -56,7 +56,7 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
           )
         : [];
 
-      // sort rank from high to low 
+      // sort rank from high to low
       const reversedScoreGroups = [...scoreGroups].reverse();
       // find higher score groups
       const higherScoreGroups = reversedScoreGroups.filter(
@@ -65,10 +65,10 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
 
       console.debug("higherScoreGroups", higherScoreGroups);
 
-      // we combine ranks with an odd number of players into a group and pair them together
-      // after that we don't need to care for players within these score groups anymore
-      // so set the threshold to exclude those score groups  
-      // for initial, use 999 to not exlucde anything, then find the threshold to look for players only in lower score groups
+      // if above score groups have an even number of players
+      // it's highly likely that they can be paired up nicely
+      // so set a threshold to exclude those score groups from effecting weight
+      // for initial, use 999 to not exclude anything
       let upperThreshold = 999;
       let upperSum = 0;
       for (let k = 0; k < higherScoreGroups.length; k++) {
@@ -77,7 +77,6 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
         upperSum += count;
 
         if (upperSum % 2 === 0) {
-          // lower the score group to find upper threshold if it's still > the current's score
           upperThreshold = sg;
 
           if (sg > higherScoreGroups.at(-1)) {
@@ -86,6 +85,7 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
         }
       }
 
+      // count the players of score groups below the threshold
       const belowThresholdScoreGroups = scoreGroups.filter(
         (sg) => sg >= curr.score && sg < upperThreshold
       );
@@ -117,7 +117,7 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
           scoreGroups.findIndex((s) => s === curr.score) -
             scoreGroups.findIndex((s) => s === opp.score)
         );
-        
+
         if (scoreGroupDiff < 2) {
           // basically prioritize pairs with closer scores (maximum different rank is 0 or 1)
           if (scoreGroupDiff === 0) {
@@ -131,9 +131,9 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
           } else {
             // different score group, but distance is only 1
             if (playerCount % 2 === 0) {
-              // number of players in the higher rank is even
+              // number of players is even
               if (playerCount === 2) {
-                // there is exactly 2 players in above score group
+                // there is exactly 2 players in these score groups
                 // if the 2 players have already played each other
                 // then, prioritize to match current player with player in a differernt rank
                 // and because players are sorted from high score to low score
@@ -156,7 +156,7 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
                 wt += 2 / Math.log10(scoreGroupDiff + 2);
               }
             } else {
-              // if the slice of multiple groups has odd number of players
+              // if number of players is odd
               // prioritize pairs with different score (shifting to next group)
               wt += 5 / Math.log10(scoreGroupDiff + 2);
             }
