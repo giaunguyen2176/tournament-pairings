@@ -245,12 +245,14 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
 
     if (pairs.length === 0) {
       return [];
-    }
+    }    
+
+    const blossomPairs = blossom(pairs, true);
 
     console.log("pairings input players", playerArray);
     console.log("pairings pairs", pairs);
+    console.log("blossomPairs", blossomPairs);
 
-    const blossomPairs = blossom(pairs, true);
     let playerCopy = [...playerArray];
     let byeArray = [];
     let match = 1;
