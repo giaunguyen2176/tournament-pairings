@@ -1,4 +1,4 @@
-import blossom from 'edmonds-blossom-fixed';
+import blossom from 'edmonds-blossom';
 import { Match } from './Match.js';
 
 interface Player {

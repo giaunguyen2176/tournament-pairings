@@ -761,12 +761,12 @@
       var bb = this.inBlossom[base];
       var bv = this.inBlossom[v];
       var bw = this.inBlossom[w];
-      var b = this.unusedBlossoms.pop();
+      b = this.unusedBlossoms.pop();
       //console.log('DEBUG: addBlossom(' + base + ',' + k + ')' + ' (v=' + v + ' w=' + w + ')' + ' -> ' + b);
       this.blossomBase[b] = base;
       this.blossomParent[b] = -1;
       this.blossomParent[bb] = b;
-      var path = this.blossomChilds[b] = [];
+      path = this.blossomChilds[b] = [];
       var endPs = this.blossomEndPs[b] = [];
       while (bv !== bb) {
         this.blossomParent[bv] = b;
@@ -872,7 +872,7 @@
         } else {
           var leaves = this.blossomLeaves(s);
           for (var jj = 0; jj < leaves.length; jj++) {
-            var v = leaves[jj];
+            v = leaves[jj];
             this.inBlossom[v] = s;
           }
         }

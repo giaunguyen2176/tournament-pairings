@@ -1,4 +1,4 @@
-import blossom from 'edmonds-blossom-fixed';
+import blossom from 'edmonds-blossom';
 export function Swiss(players, round, rated = false, colors = false) {
     const matches = [];
     let playerArray = [];
