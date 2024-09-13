@@ -113,7 +113,7 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
             scoreSums.findIndex((s) => s === curr.score + opp.score) + 1
               );
         // prioritize pair with closer distance in standings
-        wt += 1 / Math.log10(j + 2)  
+        wt += 2 / Math.log10(j + 2)  
           
         // prioritize scoreGroupDiff < 2, over scoreGroupDiff >= 2
         const scoreGroupDiff = Math.abs(
