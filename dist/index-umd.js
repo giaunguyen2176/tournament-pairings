@@ -761,12 +761,12 @@
       var bb = this.inBlossom[base];
       var bv = this.inBlossom[v];
       var bw = this.inBlossom[w];
-      b = this.unusedBlossoms.pop();
+      var b = this.unusedBlossoms.pop();
       //console.log('DEBUG: addBlossom(' + base + ',' + k + ')' + ' (v=' + v + ' w=' + w + ')' + ' -> ' + b);
       this.blossomBase[b] = base;
       this.blossomParent[b] = -1;
       this.blossomParent[bb] = b;
-      path = this.blossomChilds[b] = [];
+      var path = this.blossomChilds[b] = [];
       var endPs = this.blossomEndPs[b] = [];
       while (bv !== bb) {
         this.blossomParent[bv] = b;
@@ -872,7 +872,7 @@
         } else {
           var leaves = this.blossomLeaves(s);
           for (var jj = 0; jj < leaves.length; jj++) {
-            v = leaves[jj];
+            var v = leaves[jj];
             this.inBlossom[v] = s;
           }
         }
@@ -1215,6 +1215,8 @@
                 }
                 // prioritize pair with higher total score
                 let wt = 14 * Math.log10(scoreSums.findIndex((s) => s === curr.score + opp.score) + 1);
+                // prioritize pair with closer distance in standings
+                wt += 1 / Math.log10(i + j + 2);
                 // prioritize scoreGroupDiff < 2, over scoreGroupDiff >= 2
                 const scoreGroupDiff = Math.abs(scoreGroups.findIndex((s) => s === curr.score) -
                     scoreGroups.findIndex((s) => s === opp.score));
@@ -1224,7 +1226,7 @@
                         // same score group
                         if (scoreGroupPlayers[curr.score].length >= 3) {
                             // if group has many players, prioritize within the same score group first
-                            wt += (4 + (1 / Math.log10(i + j + 2))) / Math.log10(scoreGroupDiff + 2);
+                            wt += 4 / Math.log10(scoreGroupDiff + 2);
                         }
                         else {
                             wt += 3 / Math.log10(scoreGroupDiff + 2);
