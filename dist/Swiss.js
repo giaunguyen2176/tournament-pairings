@@ -83,7 +83,7 @@ export function Swiss(players, round, rated = false, colors = false) {
                     // same score group
                     if (scoreGroupPlayers[curr.score].length >= 3) {
                         // if group has many players, prioritize within the same score group first
-                        wt += (4 + (1 / Math.log10(j + 2))) / Math.log10(scoreGroupDiff + 2);
+                        wt += (4 + (1 / Math.log10(i + j + 2))) / Math.log10(scoreGroupDiff + 2);
                     }
                     else {
                         wt += 3 / Math.log10(scoreGroupDiff + 2);
