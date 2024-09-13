@@ -107,13 +107,7 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
           continue;
         }
         // prioritize pair with higher total score
-        let wt =
-          14 *
-          Math.log10(
-            scoreSums.findIndex((s) => s === curr.score + opp.score) + 1
-              );
-        // prioritize pair with closer distance in standings
-        wt += 1 / Math.log10(j + 2)  
+        let wt = 14 * Math.log10(scoreSums.findIndex((s) => s === curr.score + opp.score) + 1);
           
         // prioritize scoreGroupDiff < 2, over scoreGroupDiff >= 2
         const scoreGroupDiff = Math.abs(
@@ -127,7 +121,7 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
             // same score group
             if (scoreGroupPlayers[curr.score].length >= 3) {
               // if group has many players, prioritize within the same score group first
-              wt += 4 / Math.log10(scoreGroupDiff + 2);
+              wt += (4 + (1 / Math.log10(j + 2))) / Math.log10(scoreGroupDiff + 2);
             } else {
               wt += 3 / Math.log10(scoreGroupDiff + 2);
             }
