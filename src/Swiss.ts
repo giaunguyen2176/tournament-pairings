@@ -108,8 +108,6 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
         }
         // prioritize pair with higher total score
         let wt = 14 * Math.log10(scoreSums.findIndex((s) => s === curr.score + opp.score) + 1);
-        // prioritize pair with closer distance in standings
-        wt += 1 / Math.log10(i + j + 2)  
           
         // prioritize scoreGroupDiff < 2, over scoreGroupDiff >= 2
         const scoreGroupDiff = Math.abs(
