@@ -1164,44 +1164,98 @@
                 }
                 return sums;
             }).flat())].sort((a, b) => a - b);
+        const scoreGroupPlayers = scoreGroups.reduce((sgps, sg) => {
+            sgps[sg] = playerArray.filter((p) => p.score === sg);
+            return sgps;
+        }, {});
+        console.log("score sums", scoreSums);
+        console.log("score groups", scoreGroups);
+        console.log("scoreGroupPlayers", scoreGroupPlayers);
         let pairs = [];
+        let debugPairs = [];
         for (let i = 0; i < playerArray.length; i++) {
             const curr = playerArray[i];
             const next = playerArray.slice(i + 1);
-            const sorted = rated ? [...next].sort((a, b) => Math.abs(curr.rating - a.rating) - Math.abs(curr.rating - b.rating)) : [];
-            for (let j = 0; j < next.length; j++) {
-                const opp = next[j];
-                if (curr.hasOwnProperty('avoid') && curr.avoid.includes(opp.id)) {
-                    continue;
-                }
-                let wt = 14 * Math.log10(scoreSums.findIndex(s => s === curr.score + opp.score) + 1);
-                const scoreGroupDiff = Math.abs(scoreGroups.findIndex(s => s === curr.score) - scoreGroups.findIndex(s => s === opp.score));
-                wt += scoreGroupDiff < 2 ? 3 / Math.log10(scoreGroupDiff + 2) : 1 / Math.log10(scoreGroupDiff + 2);
-                if (scoreGroupDiff === 1 && curr.hasOwnProperty('pairedUpDown') && curr.pairedUpDown === false && opp.hasOwnProperty('pairedUpDown') && opp.pairedUpDown === false) {
-                    wt += 1.2;
-                }
-                if (rated) {
-                    wt += (Math.log2(sorted.length) - Math.log2(sorted.findIndex(p => p.id === opp.id) + 1)) / 3;
-                }
-                if (colors) {
-                    const colorScore = curr.colors.reduce((sum, color) => color === 'w' ? sum + 1 : sum - 1, 0);
-                    const oppScore = opp.colors.reduce((sum, color) => color === 'w' ? sum + 1 : sum - 1, 0);
-                    if (curr.colors.length > 1 && curr.colors.slice(-2).join('') === 'ww') {
-                        if (opp.colors.slice(-2).join('') === 'ww') {
+            const sorted = rated
+                ? [...next].sort((a, b) => Math.abs(curr.rating - a.rating) -
+                    Math.abs(curr.rating - b.rating))
+                : [];
+            // sort rank from high to low
+            const reversedScoreGroups = [...scoreGroups].reverse();
+            let evenThreshold = 0;
+            let evenSlicePlayerCount = 0;
+            for (let k = 0; k < reversedScoreGroups.length; k++) {
+                const sg = reversedScoreGroups[k];
+                const count = scoreGroupPlayers[sg].length;
+                evenSlicePlayerCount += count;
+                if (evenSlicePlayerCount % 2 === 0) {
+                    if (evenSlicePlayerCount === 2) {
+                        const p1 = scoreGroupPlayers[sg][0];
+                        const p2 = scoreGroupPlayers[sg][1];
+                        if (p1.avoid.includes(p2.id)) {
                             continue;
                         }
-                        else if (opp.colors.slice(-2).join('') === 'bb') {
+                    }
+                    if (sg > curr.score) {
+                        evenSlicePlayerCount = 0;
+                        continue;
+                    }
+                    evenThreshold = sg;
+                    break;
+                }
+            }
+            console.debug("score, evenThreshold, evenSlicePlayerCount", curr.score, evenThreshold, evenSlicePlayerCount);
+            const evenSlicePlayers = playerArray.filter((p) => p.score <= curr.score && p.score >= evenThreshold);
+            console.log("evenSlicePlayers", evenSlicePlayers);
+            const halfway = evenSlicePlayerCount / 2;
+            for (let j = 0; j < next.length; j++) {
+                const opp = next[j];
+                if (curr.hasOwnProperty("avoid") && curr.avoid.includes(opp.id)) {
+                    continue;
+                }
+                let debugWt = [];
+                // prioritize pair with higher total score
+                const scoreSumIndex = scoreSums.findIndex((s) => s === curr.score + opp.score);
+                let wt = 14 * Math.log10(scoreSumIndex + 1);
+                debugWt.push(['score', wt]);
+                const isSameSlice = evenSlicePlayers.find((p) => p.id === opp.id);
+                const currIndex = i;
+                const oppIndex = currIndex + j + 1;
+                if (isSameSlice) {
+                    if (i < halfway && oppIndex >= halfway) {
+                        wt += 3 / Math.log10(oppIndex - currIndex - 6 + 2);
+                        debugWt.push(["halfway", wt]);
+                    }
+                }
+                if (rated) {
+                    wt +=
+                        (Math.log2(sorted.length) -
+                            Math.log2(sorted.findIndex((p) => p.id === opp.id) + 1)) /
+                            3;
+                    debugWt.push(["rated", wt]);
+                }
+                if (colors) {
+                    debugWt.push(["colors", wt]);
+                    const colorScore = curr.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
+                    const oppScore = opp.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
+                    if (curr.colors.length > 1 &&
+                        curr.colors.slice(-2).join("") === "ww") {
+                        if (opp.colors.slice(-2).join("") === "ww") {
+                            continue;
+                        }
+                        else if (opp.colors.slice(-2).join("") === "bb") {
                             wt += 7;
                         }
                         else {
                             wt += 2 / Math.log(4 - Math.abs(oppScore));
                         }
                     }
-                    else if (curr.colors.length > 1 && curr.colors.slice(-2).join('') === 'bb') {
-                        if (opp.colors.slice(-2).join('') === 'bb') {
+                    else if (curr.colors.length > 1 &&
+                        curr.colors.slice(-2).join("") === "bb") {
+                        if (opp.colors.slice(-2).join("") === "bb") {
                             continue;
                         }
-                        else if (opp.colors.slice(-2).join('') === 'ww') {
+                        else if (opp.colors.slice(-2).join("") === "ww") {
                             wt += 8;
                         }
                         else {
@@ -1212,13 +1266,26 @@
                         wt += 5 / (4 * Math.log10(10 - Math.abs(colorScore - oppScore)));
                     }
                 }
-                if ((curr.hasOwnProperty('receivedBye') && curr.receivedBye) || (opp.hasOwnProperty('receivedBye') && opp.receivedBye)) {
-                    wt *= 1.5;
+                if ((curr.hasOwnProperty("receivedBye") && curr.receivedBye) ||
+                    (opp.hasOwnProperty("receivedBye") && opp.receivedBye)) {
+                    Math.abs(scoreGroups.findIndex((s) => s === curr.score) - scoreGroups.findIndex((s) => s === opp.score));
+                    // if (scoreGroupDiff < 2) {
+                    //   wt *= 1.5; 
+                    //   debugWt.push(["bye", wt]);
+                    // }
                 }
                 pairs.push([curr.index, opp.index, wt]);
+                debugPairs.push([curr.index, opp.index, halfway, wt, debugWt]);
             }
         }
+        if (pairs.length === 0) {
+            return [];
+        }
         const blossomPairs = blossom$1(pairs, true);
+        console.log("pairings input players", playerArray);
+        console.log("debug pairings pairs", debugPairs);
+        console.log("pairings pairs", pairs);
+        console.log("blossomPairs", blossomPairs);
         let playerCopy = [...playerArray];
         let byeArray = [];
         let match = 1;
