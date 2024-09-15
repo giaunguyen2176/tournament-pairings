@@ -1230,7 +1230,8 @@
                     }
                 }
                 else {
-                    continue;
+                    wt += 1 / Math.log10(scoreSumIndex + 2);
+                    debugWt.push(["halfway", wt]);
                 }
                 if (rated) {
                     wt +=
