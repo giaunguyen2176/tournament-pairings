@@ -115,12 +115,13 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
         debugWt.push(['score', wt]);
 
         const isSameSlice = evenSlicePlayers.find((p) => p.id === opp.id);
-        const playerIndexSum = i + (i + j + 1);
+        const oppIndex = i + j + 1;
+        const playerIndexSum = i + oppIndex;
         if (isSameSlice) {
-          if (playerIndexSum % halfway % 2 === 0) {
-            wt += 5 / Math.log10((playerIndexSum % halfway) + 2);
-          } else {
+          if (i < halfway && oppIndex >= halfway) {
             wt += 3 / Math.log10((playerIndexSum % halfway) + 2);
+          } else {
+            wt += 1 / Math.log10((playerIndexSum % halfway) + 2);
           }
           debugWt.push(["halfway", wt]);  
         } else {
