@@ -1228,8 +1228,7 @@
                     }
                 }
                 else {
-                    wt *= 1.5;
-                    debugWt.push(["halfway", wt]);
+                    continue;
                 }
                 if (rated) {
                     wt +=

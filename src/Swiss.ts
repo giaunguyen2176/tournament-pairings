@@ -124,8 +124,7 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
             debugWt.push(["halfway", wt]);
           }
         } else {
-          wt *= 1.5;
-          debugWt.push(["halfway", wt]);
+          continue;
         }
 
         if (rated) {
