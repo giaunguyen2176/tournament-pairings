@@ -1172,7 +1172,9 @@
         console.log("score groups", scoreGroups);
         console.log("scoreGroupPlayers", scoreGroupPlayers);
         let pairs = [];
+        let debugPairs = [];
         for (let i = 0; i < playerArray.length; i++) {
+            let debugWt = [];
             const curr = playerArray[i];
             const next = playerArray.slice(i + 1);
             const sorted = rated
@@ -1209,24 +1211,30 @@
                 }
                 // prioritize pair with higher total score
                 let wt = 14 * Math.log10(scoreSums.findIndex((s) => s === curr.score + opp.score) + 1);
+                debugWt.push(['score', wt]);
                 if (evenSlicePlayers.includes(opp.id)) {
                     if (opp.id === evenSlicePlayers[halfway]) {
                         wt += 3;
+                        debugWt.push(["halfway", wt]);
                     }
                     else {
                         wt += 2;
+                        debugWt.push(["halfway", wt]);
                     }
                 }
                 else {
                     wt += 1;
+                    debugWt.push(["halfway", wt]);
                 }
                 if (rated) {
                     wt +=
                         (Math.log2(sorted.length) -
                             Math.log2(sorted.findIndex((p) => p.id === opp.id) + 1)) /
                             3;
+                    debugWt.push(["rated", wt]);
                 }
                 if (colors) {
+                    debugWt.push(["colors", wt]);
                     const colorScore = curr.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
                     const oppScore = opp.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
                     if (curr.colors.length > 1 &&
@@ -1260,8 +1268,10 @@
                 if ((curr.hasOwnProperty("receivedBye") && curr.receivedBye) ||
                     (opp.hasOwnProperty("receivedBye") && opp.receivedBye)) {
                     wt *= 1.5;
+                    debugWt.push(["bye", wt]);
                 }
                 pairs.push([curr.index, opp.index, wt]);
+                debugPairs.push([curr.index, opp.index, wt, debugWt]);
             }
         }
         if (pairs.length === 0) {
