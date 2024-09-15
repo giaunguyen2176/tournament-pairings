@@ -113,9 +113,7 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
         let wt = 14 * Math.log10(scoreSumIndex + 1);
         debugWt.push(['score', wt]);
 
-        
-
-        if (evenSlicePlayers.includes(opp.id)) {
+        if (evenSlicePlayers.find((p) => p.id === opp.id)) {
           if (opp.id === evenSlicePlayers[halfway]) {
             wt *= 5;
             debugWt.push(["halfway", wt]);
