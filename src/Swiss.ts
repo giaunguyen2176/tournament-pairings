@@ -99,21 +99,21 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
         }
 
         let debugWt = [];
-        
+
         // prioritize pair with higher total score
         let wt = 14 * Math.log10(scoreSums.findIndex((s) => s === curr.score + opp.score) + 1);
         debugWt.push(['score', wt]);
 
         if (evenSlicePlayers.includes(opp.id)) {
           if (opp.id === evenSlicePlayers[halfway]) {
-            wt += 3;
+            wt *= 2.5;
             debugWt.push(["halfway", wt]);
           } else {
-            wt += 2;
+            wt *= 2;
             debugWt.push(["halfway", wt]);
           }
         } else {
-          wt += 1;
+          wt *= 1.5;
           debugWt.push(["halfway", wt]);
         }
 
