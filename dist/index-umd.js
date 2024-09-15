@@ -1174,7 +1174,6 @@
         let pairs = [];
         let debugPairs = [];
         for (let i = 0; i < playerArray.length; i++) {
-            let debugWt = [];
             const curr = playerArray[i];
             const next = playerArray.slice(i + 1);
             const sorted = rated
@@ -1209,6 +1208,7 @@
                 if (curr.hasOwnProperty("avoid") && curr.avoid.includes(opp.id)) {
                     continue;
                 }
+                let debugWt = [];
                 // prioritize pair with higher total score
                 let wt = 14 * Math.log10(scoreSums.findIndex((s) => s === curr.score + opp.score) + 1);
                 debugWt.push(['score', wt]);
