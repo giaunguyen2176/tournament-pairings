@@ -1281,7 +1281,7 @@
                     // }
                 }
                 pairs.push([curr.index, opp.index, wt]);
-                debugPairs.push([curr.index, opp.index, wt, debugWt]);
+                debugPairs.push([curr.index, opp.index, halfway, wt, debugWt]);
             }
         }
         if (pairs.length === 0) {

@@ -183,7 +183,7 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
           // }
         }
         pairs.push([curr.index, opp.index, wt]);
-        debugPairs.push([curr.index, opp.index, wt, debugWt]);
+        debugPairs.push([curr.index, opp.index, halfway, wt, debugWt]);
       }
     }
 
