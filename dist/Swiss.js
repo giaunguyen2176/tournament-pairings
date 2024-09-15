@@ -88,11 +88,9 @@ export function Swiss(players, round, rated = false, colors = false) {
                     debugWt.push(["halfway", wt]);
                 }
                 else {
-                    continue;
                 }
             }
             else {
-                continue;
             }
             if (rated) {
                 wt +=
