@@ -1219,19 +1219,19 @@
                 let wt = 14 * Math.log10(scoreSumIndex + 1);
                 debugWt.push(['score', wt]);
                 const isSameSlice = evenSlicePlayers.find((p) => p.id === opp.id);
-                const oppIndex = i + j + 1;
-                const playerIndexSum = i + oppIndex;
+                const currIndex = i;
+                const oppIndex = currIndex + j + 1;
                 if (isSameSlice) {
                     if (i < halfway && oppIndex >= halfway) {
-                        wt += 3 / Math.log10((playerIndexSum % halfway) + 2);
+                        wt += 3 / Math.log10((oppIndex - currIndex - 6) + 2);
                     }
                     else {
-                        wt += 1 / Math.log10((playerIndexSum % halfway) + 2);
+                        wt += 1 / Math.log10(oppIndex - currIndex - 6 + 2);
                     }
                     debugWt.push(["halfway", wt]);
                 }
                 else {
-                    wt += 1 / Math.log10((playerIndexSum % halfway) + 2);
+                    wt += 1 / Math.log10(oppIndex - currIndex - 6 + 2);
                     debugWt.push(["halfway", wt]);
                 }
                 if (rated) {
