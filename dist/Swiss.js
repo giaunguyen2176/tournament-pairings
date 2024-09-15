@@ -82,16 +82,16 @@ export function Swiss(players, round, rated = false, colors = false) {
             const isSameSlice = evenSlicePlayers.find((p) => p.id === opp.id);
             if (isSameSlice) {
                 if (opp.id === evenSlicePlayers[halfway]) {
-                    wt += 5 / Math.log10(scoreSumIndex + 2);
+                    wt += 5 / Math.log10((Math.abs(i + j - halfway)) + 2);
                     debugWt.push(["halfway", wt]);
                 }
                 else {
-                    wt += 3 / Math.log10(scoreSumIndex + 2);
+                    wt += 3 / Math.log10(Math.abs(i + j - halfway) + 2);
                     debugWt.push(["halfway", wt]);
                 }
             }
             else {
-                wt += 1 / Math.log10(scoreSumIndex + 2);
+                wt += 1 / Math.log10(Math.abs(i + j - halfway) + 2);
                 debugWt.push(["halfway", wt]);
             }
             if (rated) {
