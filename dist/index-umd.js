@@ -1181,33 +1181,27 @@
                 : [];
             // sort rank from high to low
             const reversedScoreGroups = [...scoreGroups].reverse();
-            // find higher score groups
-            const higherScoreGroups = reversedScoreGroups.filter((sg) => sg > curr.score);
-            console.debug("higherScoreGroups", higherScoreGroups);
-            // if above score groups have an even number of players
-            // it's highly likely that they can be paired up nicely
-            // so set a threshold to exclude those score groups from effecting weight
-            // for initial, use 999 to not exclude anything
-            let upperThreshold = 999;
-            let upperSum = 0;
-            for (let k = 0; k < higherScoreGroups.length; k++) {
+            let evenThreshold = 0;
+            let evenSlicePlayerCount = 0;
+            for (let k = 0; k < reversedScoreGroups.length; k++) {
                 const sg = reversedScoreGroups[k];
-                const count = playerArray.filter((p) => p.score === sg).length;
-                upperSum += count;
-                if (upperSum % 2 === 0) {
-                    upperThreshold = sg;
-                    if (sg > higherScoreGroups.at(-1)) {
-                        upperSum = 0;
+                const count = scoreGroupPlayers[sg].length;
+                evenSlicePlayerCount += count;
+                if (evenSlicePlayerCount % 2 === 0) {
+                    if (evenSlicePlayerCount === 2) {
+                        const p1 = scoreGroupPlayers[sg][0];
+                        const p2 = scoreGroupPlayers[sg][1];
+                        if (p1.avoid.includes(p2.id)) {
+                            continue;
+                        }
                     }
+                    evenThreshold = sg;
+                    break;
                 }
             }
-            // count the players of score groups below the threshold
-            const belowThresholdScoreGroups = scoreGroups.filter((sg) => sg >= curr.score && sg < upperThreshold);
-            const playerCount = belowThresholdScoreGroups.reduce((count, sg) => {
-                count = count + scoreGroupPlayers[sg].length;
-                return count;
-            }, 0);
-            console.debug("score, upperThreshold, playerCount", curr.score, upperThreshold, playerCount);
+            console.debug("score, evenThreshold, evenSlicePlayerCount", curr.score, evenThreshold, evenSlicePlayerCount);
+            const evenSlicePlayers = playerArray.filter((p) => p.score >= evenThreshold);
+            const halfway = evenSlicePlayerCount / 2;
             for (let j = 0; j < next.length; j++) {
                 const opp = next[j];
                 if (curr.hasOwnProperty("avoid") && curr.avoid.includes(opp.id)) {
@@ -1215,81 +1209,16 @@
                 }
                 // prioritize pair with higher total score
                 let wt = 14 * Math.log10(scoreSums.findIndex((s) => s === curr.score + opp.score) + 1);
-                // prioritize scoreGroupDiff < 2, over scoreGroupDiff >= 2
-                const scoreGroupDiff = Math.abs(scoreGroups.findIndex((s) => s === curr.score) -
-                    scoreGroups.findIndex((s) => s === opp.score));
-                if (scoreGroupDiff < 2) {
-                    // basically prioritize pairs with closer scores (maximum different rank is 0 or 1)
-                    if (scoreGroupDiff === 0) {
-                        // same score group
-                        if (scoreGroupPlayers[curr.score].length >= 3) {
-                            // if group has many players, prioritize within the same score group first
-                            wt += 4 / Math.log10(scoreGroupDiff + 2);
-                        }
-                        else {
-                            wt += 3 / Math.log10(scoreGroupDiff + 2);
-                        }
+                if (evenSlicePlayers.includes(opp.id)) {
+                    if (opp.id === evenSlicePlayers[halfway]) {
+                        wt += 3;
                     }
                     else {
-                        // different score group, but distance is only 1
-                        if (playerCount % 2 === 0) {
-                            // number of players is even
-                            if (playerCount === 2) {
-                                // there is exactly 2 players in these score groups
-                                // if the 2 players have already played each other
-                                // then, prioritize to match current player with player in a differernt rank
-                                // and because players are sorted from high score to low score
-                                // that mean to prioritize to match current player with player in lower rank
-                                if (!scoreGroupPlayers[curr.score] ||
-                                    scoreGroupPlayers[curr.score].length < 2) {
-                                    wt += 2 / Math.log10(scoreGroupDiff + 2);
-                                }
-                                else {
-                                    const player1 = scoreGroupPlayers[curr.score][0];
-                                    const player2 = scoreGroupPlayers[curr.score][1];
-                                    if (player1.avoid.includes(player2.id)) {
-                                        wt += 5 / Math.log10(scoreGroupDiff + 2);
-                                    }
-                                    else {
-                                        wt += 2 / Math.log10(scoreGroupDiff + 2);
-                                    }
-                                }
-                            }
-                            else {
-                                wt += 2 / Math.log10(scoreGroupDiff + 2);
-                            }
-                        }
-                        else {
-                            // if number of players is odd
-                            // prioritize pairs with different score (shifting to next group)
-                            wt += 5 / Math.log10(scoreGroupDiff + 2);
-                        }
-                    }
-                }
-                else if (scoreGroupDiff < 3) {
-                    // different rank is 2
-                    const players = playerArray
-                        .filter((p) => p.score > opp.score && p.score <= curr.score)
-                        .map((p) => p.id);
-                    const pairable = players.find((id) => id !== curr.id && !curr.avoid.includes(id));
-                    if (pairable) {
-                        wt += Math.log10(scoreGroupDiff + 2);
-                    }
-                    else {
-                        // if can not pair with anyone between curr.score & opp.score, prioritize it more
-                        wt += 6 / Math.log10(scoreGroupDiff + 2);
+                        wt += 2;
                     }
                 }
                 else {
-                    // do not allow pairs with different rank >= 3
-                    continue;
-                }
-                if (scoreGroupDiff === 1 &&
-                    curr.hasOwnProperty("pairedUpDown") &&
-                    curr.pairedUpDown === false &&
-                    opp.hasOwnProperty("pairedUpDown") &&
-                    opp.pairedUpDown === false) {
-                    wt += 1.2;
+                    wt += 1;
                 }
                 if (rated) {
                     wt +=
