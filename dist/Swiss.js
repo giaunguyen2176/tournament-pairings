@@ -88,8 +88,9 @@ export function Swiss(players, round, rated = false, colors = false) {
                         wt += 5 / Math.log10(2);
                     }
                     else {
-                        if (oppIndex - currIndex - halfway > 0) {
-                            wt += 3 / Math.log10(2);
+                        const indexDiff = oppIndex - currIndex - halfway;
+                        if (indexDiff > 0) {
+                            wt += 3 / Math.log10(indexDiff + 2);
                         }
                         else {
                             wt += 2 / Math.log10(2);
