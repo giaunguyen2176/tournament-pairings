@@ -75,16 +75,16 @@ export function Swiss(players, round, rated = false, colors = false) {
             debugWt.push(['score', wt]);
             if (evenSlicePlayers.includes(opp.id)) {
                 if (opp.id === evenSlicePlayers[halfway]) {
-                    wt += 5 / Math.log10(scoreSumIndex + 2);
+                    wt *= 5;
                     debugWt.push(["halfway", wt]);
                 }
                 else {
-                    wt += 3 / Math.log10(scoreSumIndex + 2);
+                    wt *= 3;
                     debugWt.push(["halfway", wt]);
                 }
             }
             else {
-                wt += 1 / Math.log10(scoreSumIndex + 2);
+                wt *= 1.5;
                 debugWt.push(["halfway", wt]);
             }
             if (rated) {
@@ -129,10 +129,10 @@ export function Swiss(players, round, rated = false, colors = false) {
             if ((curr.hasOwnProperty("receivedBye") && curr.receivedBye) ||
                 (opp.hasOwnProperty("receivedBye") && opp.receivedBye)) {
                 const scoreGroupDiff = Math.abs(scoreGroups.findIndex((s) => s === curr.score) - scoreGroups.findIndex((s) => s === opp.score));
-                if (scoreGroupDiff < 2) {
-                    wt *= 1.5;
-                    debugWt.push(["bye", wt]);
-                }
+                // if (scoreGroupDiff < 2) {
+                //   wt *= 1.5; 
+                //   debugWt.push(["bye", wt]);
+                // }
             }
             pairs.push([curr.index, opp.index, wt]);
             debugPairs.push([curr.index, opp.index, wt, debugWt]);
