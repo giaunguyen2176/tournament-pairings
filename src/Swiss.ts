@@ -46,6 +46,7 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
 
   let pairs = [];
   let debugPairs = [];
+  let upperThreshold = 999;
   for (let i = 0; i < playerArray.length; i++) {
       const curr = playerArray[i];
       const next = playerArray.slice(i + 1);
@@ -58,8 +59,7 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
         : [];
 
       // sort rank from high to low
-      const reversedScoreGroups = [...scoreGroups.filter((sg) => sg <= curr.score)].reverse();
-      
+      const reversedScoreGroups = [...scoreGroups].reverse();
       let evenThreshold = 0;
       let evenSlicePlayerCount = 0;
       
@@ -77,6 +77,12 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
               continue;
             }
           }
+
+          if (sg > curr.score) {
+            evenSlicePlayerCount = 0;
+            continue;
+          }
+
           evenThreshold = sg;
           break;
         }
