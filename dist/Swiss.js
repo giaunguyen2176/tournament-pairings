@@ -80,11 +80,11 @@ export function Swiss(players, round, rated = false, colors = false) {
             debugWt.push(['score', wt]);
             if (evenSlicePlayers.find((p) => p.id === opp.id)) {
                 if (opp.id === evenSlicePlayers[halfway]) {
-                    wt *= 5;
+                    wt += 5 / Math.log10(scoreSumIndex + 2);
                     debugWt.push(["halfway", wt]);
                 }
                 else {
-                    wt *= 3;
+                    wt += 3 / Math.log10(scoreSumIndex + 2);
                     debugWt.push(["halfway", wt]);
                 }
             }
