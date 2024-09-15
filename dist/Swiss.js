@@ -42,7 +42,8 @@ export function Swiss(players, round, rated = false, colors = false) {
             : [];
         // sort rank from high to low
         const reversedScoreGroups = [...scoreGroups].reverse();
-        let evenThreshold = 0;
+        let evenHighThreshold = 999;
+        let evenLowThreshold = 0;
         let evenSlicePlayerCount = 0;
         for (let k = 0; k < reversedScoreGroups.length; k++) {
             const sg = reversedScoreGroups[k];
@@ -57,15 +58,16 @@ export function Swiss(players, round, rated = false, colors = false) {
                     }
                 }
                 if (sg > curr.score) {
+                    evenHighThreshold = sg;
                     evenSlicePlayerCount = 0;
                     continue;
                 }
-                evenThreshold = sg;
+                evenLowThreshold = sg;
                 break;
             }
         }
-        console.debug("score, evenThreshold, evenSlicePlayerCount", curr.score, evenThreshold, evenSlicePlayerCount);
-        const evenSlicePlayers = playerArray.filter((p) => p.score <= curr.score && p.score >= evenThreshold);
+        console.debug("score, evenHighThreshold, evenLowThreshold, evenSlicePlayerCount", curr.score, evenHighThreshold, evenLowThreshold, evenSlicePlayerCount);
+        const evenSlicePlayers = playerArray.filter((p) => p.score < evenHighThreshold && p.score >= evenLowThreshold);
         console.log("evenSlicePlayers", evenSlicePlayers);
         const halfway = evenSlicePlayerCount / 2;
         for (let j = 0; j < next.length; j++) {
