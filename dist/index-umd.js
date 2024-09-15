@@ -1181,7 +1181,7 @@
                     Math.abs(curr.rating - b.rating))
                 : [];
             // sort rank from high to low
-            const reversedScoreGroups = [...scoreGroups].reverse();
+            const reversedScoreGroups = [...scoreGroups.filter((sg) => sg <= curr.score)].reverse();
             let evenThreshold = 0;
             let evenSlicePlayerCount = 0;
             for (let k = 0; k < reversedScoreGroups.length; k++) {

@@ -58,7 +58,7 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
         : [];
 
       // sort rank from high to low
-      const reversedScoreGroups = [...scoreGroups].reverse();
+      const reversedScoreGroups = [...scoreGroups.filter((sg) => sg <= curr.score)].reverse();
       
       let evenThreshold = 0;
       let evenSlicePlayerCount = 0;
