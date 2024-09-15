@@ -60,7 +60,7 @@ export function Swiss(players, round, rated = false, colors = false) {
             }
         }
         console.debug("score, evenThreshold, evenSlicePlayerCount", curr.score, evenThreshold, evenSlicePlayerCount);
-        const evenSlicePlayers = playerArray.filter((p) => p.score >= evenThreshold);
+        const evenSlicePlayers = playerArray.filter((p) => p.score <= curr.score && p.score >= evenThreshold);
         const halfway = evenSlicePlayerCount / 2;
         for (let j = 0; j < next.length; j++) {
             const opp = next[j];
