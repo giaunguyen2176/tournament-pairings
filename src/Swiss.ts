@@ -119,7 +119,15 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
         const oppIndex = currIndex + j + 1;
         if (isSameSlice) {
           if (i < halfway && oppIndex >= halfway) {
-            wt += 3 / Math.log10(oppIndex - currIndex - 6 + 2);
+            if (oppIndex - currIndex === 6) {
+              wt += 5 / Math.log10(2);
+            } else {
+              if (oppIndex - currIndex - halfway > 0) {
+                wt += 3 / Math.log10(2);
+              } else {
+                wt += 2 / Math.log10(2);
+              }
+            }
             debugWt.push(["halfway", wt]);  
           } else {
             
