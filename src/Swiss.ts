@@ -178,7 +178,7 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
     const blossomPairs = blossom(pairs, true);
 
     console.log("pairings input players", playerArray);
-    console.log("debug pairings pairs", pairs);
+    console.log("debug pairings pairs", debugPairs);
     console.log("pairings pairs", pairs);
     console.log("blossomPairs", blossomPairs);
 
