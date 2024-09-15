@@ -66,6 +66,7 @@ export function Swiss(players, round, rated = false, colors = false) {
         }
         console.debug("score, evenThreshold, evenSlicePlayerCount", curr.score, evenThreshold, evenSlicePlayerCount);
         const evenSlicePlayers = playerArray.filter((p) => p.score <= curr.score && p.score >= evenThreshold);
+        console.log("evenSlicePlayers", evenSlicePlayers);
         const halfway = evenSlicePlayerCount / 2;
         for (let j = 0; j < next.length; j++) {
             const opp = next[j];
@@ -78,7 +79,8 @@ export function Swiss(players, round, rated = false, colors = false) {
             ;
             let wt = 14 * Math.log10(scoreSumIndex + 1);
             debugWt.push(['score', wt]);
-            if (evenSlicePlayers.find((p) => p.id === opp.id)) {
+            const isSameSlice = evenSlicePlayers.find((p) => p.id === opp.id);
+            if (isSameSlice) {
                 if (opp.id === evenSlicePlayers[halfway]) {
                     wt += 5 / Math.log10(scoreSumIndex + 2);
                     debugWt.push(["halfway", wt]);
