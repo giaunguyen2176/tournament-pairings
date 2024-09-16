@@ -1234,7 +1234,16 @@
                         else {
                             wt += 1 / Math.log10(2);
                         }
-                        debugWt.push(["halfway", wt, indexDiff, currIndex, oppIndex]);
+                        debugWt.push([
+                            "halfway",
+                            wt,
+                            oppIndex,
+                            currIndex,
+                            halfway,
+                            indexDiff,
+                            currIndex,
+                            oppIndex,
+                        ]);
                     }
                 }
                 if (rated) {
@@ -1285,7 +1294,7 @@
                     // }
                 }
                 pairs.push([curr.index, opp.index, wt]);
-                debugPairs.push([curr.index, opp.index, halfway, wt, debugWt]);
+                debugPairs.push([curr.index, opp.index, wt, debugWt]);
             }
         }
         if (pairs.length === 0) {

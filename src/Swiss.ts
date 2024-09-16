@@ -131,7 +131,16 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
             } else {
               wt += 1 / Math.log10(2);
             }
-            debugWt.push(["halfway", wt, indexDiff, currIndex, oppIndex]);  
+            debugWt.push([
+              "halfway",
+              wt,
+              oppIndex,
+              currIndex,
+              halfway,
+              indexDiff,
+              currIndex,
+              oppIndex,
+            ]);  
           }
         }
 
@@ -190,7 +199,7 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
           // }
         }
         pairs.push([curr.index, opp.index, wt]);
-        debugPairs.push([curr.index, opp.index, halfway, wt, debugWt]);
+        debugPairs.push([curr.index, opp.index, wt, debugWt]);
       }
     }
 
