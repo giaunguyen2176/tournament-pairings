@@ -1295,8 +1295,14 @@
                 }
                 if ((curr.hasOwnProperty("receivedBye") && curr.receivedBye) ||
                     (opp.hasOwnProperty("receivedBye") && opp.receivedBye)) {
-                    wt *= 1.5;
-                    debugWt.push(["bye", wt]);
+                    const scoreGroupDiff = Math.abs(scoreGroups.findIndex((s) => s === curr.score) - scoreGroups.findIndex((s) => s === opp.score));
+                    if (scoreGroupDiff === 0) {
+                        wt *= 1.5;
+                        debugWt.push(["bye", wt]);
+                    }
+                    else if (scoreGroupDiff === 1) {
+                        wt *= 1.25;
+                    }
                 }
                 pairs.push([curr.index, opp.index, wt]);
                 debugPairs.push([curr.index, opp.index, wt, debugWt]);
