@@ -101,17 +101,13 @@ export function Swiss(players, round, rated = false, colors = false) {
                         indexDiff,
                     ]);
                 }
-                debugWt.push([
-                    "halfway",
-                    wt,
-                    oppIndex,
-                    currIndex,
-                    halfway,
-                ]);
+                else {
+                    debugWt.push(["same half", wt, oppIndex, currIndex, halfway]);
+                }
             }
             else {
                 debugWt.push([
-                    "halfway",
+                    "not same slice",
                     wt,
                     oppIndex,
                     currIndex,
