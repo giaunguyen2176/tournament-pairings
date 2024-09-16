@@ -88,24 +88,15 @@ export function Swiss(players, round, rated = false, colors = false) {
             const oppIndex = currIndex + j + 1;
             if (isSameSlice) {
                 if (i < halfway && oppIndex >= halfway) {
-                    if (oppIndex - currIndex === 6) {
-                        wt += 5 / Math.log10(2);
+                    const indexDiff = oppIndex - currIndex - halfway;
+                    if (indexDiff > 0) {
+                        wt += 3 / Math.log10(currIndex + oppIndex + 2);
                     }
                     else {
-                        const indexDiff = oppIndex - currIndex - halfway;
-                        if (indexDiff > 0) {
-                            wt += 3 / Math.log10(indexDiff + 2);
-                        }
-                        else {
-                            wt += 2 / Math.log10(2);
-                        }
+                        wt += 1 / Math.log10(2);
                     }
                     debugWt.push(["halfway", wt]);
                 }
-                else {
-                }
-            }
-            else {
             }
             if (rated) {
                 wt +=
