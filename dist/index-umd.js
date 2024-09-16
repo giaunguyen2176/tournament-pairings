@@ -1228,7 +1228,7 @@
                 if (isSameSlice) {
                     if (i < halfway && oppIndex >= halfway) {
                         const indexDiff = oppIndex - currIndex - halfway;
-                        if (indexDiff > 0) {
+                        if (indexDiff >= 0) {
                             wt += 5 / Math.log10(currIndex + oppIndex + 2);
                         }
                         else {
