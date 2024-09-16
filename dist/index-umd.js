@@ -1224,7 +1224,7 @@
                 const currIndex = evenSlicePlayers.findIndex((p) => p.id === curr.id);
                 const oppIndex = evenSlicePlayers.findIndex((p) => p.id === opp.id);
                 if (isSameSlice) {
-                    if (i < halfway && oppIndex >= halfway) {
+                    if (currIndex < halfway && oppIndex >= halfway) {
                         const indexDiff = oppIndex - currIndex - halfway;
                         if (indexDiff >= -1) {
                             wt += 5 / Math.log10(currIndex + oppIndex + 3);
