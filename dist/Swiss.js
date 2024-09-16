@@ -90,7 +90,7 @@ export function Swiss(players, round, rated = false, colors = false) {
                 if (i < halfway && oppIndex >= halfway) {
                     const indexDiff = oppIndex - currIndex - halfway;
                     if (indexDiff >= -1) {
-                        wt += 5 / Math.log10(currIndex + oppIndex + 2);
+                        wt += 5 / Math.log10(currIndex + oppIndex + 3);
                     }
                     else {
                         wt += 1 / Math.log10(2);
