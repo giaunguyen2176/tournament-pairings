@@ -153,16 +153,19 @@ export function Swiss(players, round, rated = false, colors = false) {
                     wt += 5 / (4 * Math.log10(10 - Math.abs(colorScore - oppScore)));
                 }
             }
-            if ((curr.hasOwnProperty("receivedBye") && curr.receivedBye) ||
-                (opp.hasOwnProperty("receivedBye") && opp.receivedBye)) {
-                const scoreGroupDiff = Math.abs(scoreGroups.findIndex((s) => s === curr.score) - scoreGroups.findIndex((s) => s === opp.score));
-                if (scoreGroupDiff < 2) {
-                    wt *= 1.5;
-                    debugWt.push(["bye", wt]);
-                }
-                else {
-                    wt *= 1.25;
-                    debugWt.push(["bye high", wt]);
+            if (opp.hasOwnProperty("receivedBye") && opp.receivedBye) {
+                const currGroupIndex = scoreGroups.findIndex((s) => s === curr.score);
+                const oppGroupIndex = scoreGroups.findIndex((s) => s === opp.score);
+                const scoreGroupDiff = Math.abs(currGroupIndex - oppGroupIndex);
+                if (oppGroupIndex < 2) {
+                    if (scoreGroupDiff < 2) {
+                        wt *= 1.5;
+                        debugWt.push(["bye with low diff", wt]);
+                    }
+                    else {
+                        wt *= 1.25;
+                        debugWt.push(["bye with high diff", wt]);
+                    }
                 }
             }
             pairs.push([curr.index, opp.index, wt]);
