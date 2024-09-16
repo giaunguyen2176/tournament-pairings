@@ -100,10 +100,7 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
 
       const evenSlicePlayers = playerArray.filter((p) => p.score < evenHighThreshold && p.score >= evenLowThreshold);
       console.log("evenSlicePlayers", evenSlicePlayers);
-    
-      const sliceBeginIndex = playerArray.indexOf(evenSlicePlayers[0]);
-      const sliceEndIndex = playerArray.indexOf(evenSlicePlayers.at(-1));
-      const halfway = (sliceBeginIndex + sliceEndIndex + 1) / 2;
+      const halfway = evenSlicePlayers.length / 2;
 
       for (let j = 0; j < next.length; j++) {
         const opp = next[j];

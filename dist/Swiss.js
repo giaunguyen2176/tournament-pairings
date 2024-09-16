@@ -69,9 +69,7 @@ export function Swiss(players, round, rated = false, colors = false) {
         console.debug("score, evenHighThreshold, evenLowThreshold, evenSlicePlayerCount", curr.score, evenHighThreshold, evenLowThreshold, evenSlicePlayerCount);
         const evenSlicePlayers = playerArray.filter((p) => p.score < evenHighThreshold && p.score >= evenLowThreshold);
         console.log("evenSlicePlayers", evenSlicePlayers);
-        const sliceBeginIndex = playerArray.indexOf(evenSlicePlayers[0]);
-        const sliceEndIndex = playerArray.indexOf(evenSlicePlayers.at(-1));
-        const halfway = (sliceBeginIndex + sliceEndIndex + 1) / 2;
+        const halfway = evenSlicePlayers.length / 2;
         for (let j = 0; j < next.length; j++) {
             const opp = next[j];
             if (curr.hasOwnProperty("avoid") && curr.avoid.includes(opp.id)) {
