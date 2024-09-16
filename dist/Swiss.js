@@ -159,11 +159,11 @@ export function Swiss(players, round, rated = false, colors = false) {
                 const scoreGroupDiff = Math.abs(currGroupIndex - oppGroupIndex);
                 if (oppGroupIndex < 2) {
                     if (scoreGroupDiff < 2) {
-                        wt *= 1.5;
+                        wt += 5 / Math.log10(scoreGroupDiff + 2);
                         debugWt.push(["bye with low diff", wt]);
                     }
                     else {
-                        wt *= 1.25;
+                        wt += 3 / Math.log10(scoreGroupDiff + 2);
                         debugWt.push(["bye with high diff", wt]);
                     }
                 }
