@@ -95,7 +95,7 @@ export function Swiss(players, round, rated = false, colors = false) {
                     else {
                         wt += 1 / Math.log10(2);
                     }
-                    debugWt.push(["halfway", wt]);
+                    debugWt.push(["halfway", wt, indexDiff, currIndex, oppIndex]);
                 }
             }
             if (rated) {
