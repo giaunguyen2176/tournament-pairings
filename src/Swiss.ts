@@ -139,6 +139,44 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
           } else {
             debugWt.push(["same half", wt, oppIndex, currIndex, halfway]);  
           }
+
+          if (colors) {
+            debugWt.push(["colors", wt]);
+            const colorScore = curr.colors.reduce(
+              (sum, color) => (color === "w" ? sum + 1 : sum - 1),
+              0
+            );
+            const oppScore = opp.colors.reduce(
+              (sum, color) => (color === "w" ? sum + 1 : sum - 1),
+              0
+            );
+
+            if (
+              curr.colors.length > 1 &&
+              curr.colors.slice(-2).join("") === "ww"
+            ) {
+              if (opp.colors.slice(-2).join("") === "ww") {
+                continue;
+              } else if (opp.colors.slice(-2).join("") === "bb") {
+                wt += 7;
+              } else {
+                wt += 2 / Math.log(4 - Math.abs(oppScore));
+              }
+            } else if (
+              curr.colors.length > 1 &&
+              curr.colors.slice(-2).join("") === "bb"
+            ) {
+              if (opp.colors.slice(-2).join("") === "bb") {
+                continue;
+              } else if (opp.colors.slice(-2).join("") === "ww") {
+                wt += 8;
+              } else {
+                wt += 2 / Math.log(4 - Math.abs(oppScore));
+              }
+            } else {
+              wt += 5 / (4 * Math.log10(10 - Math.abs(colorScore - oppScore)));
+            }
+          }
         } else {
           debugWt.push([
             "not same slice",
@@ -156,43 +194,7 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
             3;
           debugWt.push(["rated", wt]);
         }
-        if (colors) {
-          debugWt.push(["colors", wt]);
-          const colorScore = curr.colors.reduce(
-            (sum, color) => (color === "w" ? sum + 1 : sum - 1),
-            0
-          );
-          const oppScore = opp.colors.reduce(
-            (sum, color) => (color === "w" ? sum + 1 : sum - 1),
-            0
-          );
-
-          if (
-            curr.colors.length > 1 &&
-            curr.colors.slice(-2).join("") === "ww"
-          ) {
-            if (opp.colors.slice(-2).join("") === "ww") {
-              continue;
-            } else if (opp.colors.slice(-2).join("") === "bb") {
-              wt += 7;
-            } else {
-              wt += 2 / Math.log(4 - Math.abs(oppScore));
-            }
-          } else if (
-            curr.colors.length > 1 &&
-            curr.colors.slice(-2).join("") === "bb"
-          ) {
-            if (opp.colors.slice(-2).join("") === "bb") {
-              continue;
-            } else if (opp.colors.slice(-2).join("") === "ww") {
-              wt += 8;
-            } else {
-              wt += 2 / Math.log(4 - Math.abs(oppScore));
-            }
-          } else {
-            wt += 5 / (4 * Math.log10(10 - Math.abs(colorScore - oppScore)));
-          }
-        }
+        
         if (opp.hasOwnProperty("receivedBye") && opp.receivedBye) {
           const currGroupIndex = scoreGroups.findIndex((s) => s === curr.score);
           const oppGroupIndex = scoreGroups.findIndex((s) => s === opp.score);
