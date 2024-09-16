@@ -1221,8 +1221,8 @@
                 let wt = 14 * Math.log10(scoreSumIndex + 1);
                 debugWt.push(['score', wt]);
                 const isSameSlice = evenSlicePlayers.find((p) => p.id === opp.id);
-                const currIndex = i;
-                const oppIndex = currIndex + j + 1;
+                const currIndex = evenSlicePlayers.findIndex((p) => p.id === curr.id);
+                const oppIndex = evenSlicePlayers.findIndex((p) => p.id === opp.id);
                 if (isSameSlice) {
                     if (i < halfway && oppIndex >= halfway) {
                         const indexDiff = oppIndex - currIndex - halfway;
