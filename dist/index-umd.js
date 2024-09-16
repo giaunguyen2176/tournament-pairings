@@ -1296,12 +1296,13 @@
                 if ((curr.hasOwnProperty("receivedBye") && curr.receivedBye) ||
                     (opp.hasOwnProperty("receivedBye") && opp.receivedBye)) {
                     const scoreGroupDiff = Math.abs(scoreGroups.findIndex((s) => s === curr.score) - scoreGroups.findIndex((s) => s === opp.score));
-                    if (scoreGroupDiff === 0) {
+                    if (scoreGroupDiff < 2) {
                         wt *= 1.5;
                         debugWt.push(["bye", wt]);
                     }
-                    else if (scoreGroupDiff === 1) {
+                    else {
                         wt *= 1.25;
+                        debugWt.push(["bye high", wt]);
                     }
                 }
                 pairs.push([curr.index, opp.index, wt]);
