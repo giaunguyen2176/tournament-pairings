@@ -135,10 +135,23 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
               currIndex,
               halfway,
               indexDiff,
-              currIndex,
-              oppIndex,
             ]);  
           }
+          debugWt.push([
+            "halfway",
+            wt,
+            oppIndex,
+            currIndex,
+            halfway,
+          ]);  
+        } else {
+          debugWt.push([
+            "halfway",
+            wt,
+            oppIndex,
+            currIndex,
+            halfway,
+          ]);  
         }
 
         if (rated) {

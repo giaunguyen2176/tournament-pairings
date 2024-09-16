@@ -1239,10 +1239,24 @@
                             currIndex,
                             halfway,
                             indexDiff,
-                            currIndex,
-                            oppIndex,
                         ]);
                     }
+                    debugWt.push([
+                        "halfway",
+                        wt,
+                        oppIndex,
+                        currIndex,
+                        halfway,
+                    ]);
+                }
+                else {
+                    debugWt.push([
+                        "halfway",
+                        wt,
+                        oppIndex,
+                        currIndex,
+                        halfway,
+                    ]);
                 }
                 if (rated) {
                     wt +=
