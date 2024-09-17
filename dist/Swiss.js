@@ -103,7 +103,6 @@ export function Swiss(players, round, rated = false, colors = false) {
                     debugWt.push(["same half", wt, oppIndex, currIndex, halfway]);
                 }
                 if (colors) {
-                    debugWt.push(["colors", wt]);
                     const colorScore = curr.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
                     const oppScore = opp.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
                     if (curr.colors.length > 1 &&
@@ -133,6 +132,7 @@ export function Swiss(players, round, rated = false, colors = false) {
                     else {
                         wt += 5 / (4 * Math.log10(10 - Math.abs(colorScore - oppScore)));
                     }
+                    debugWt.push(["colors", wt]);
                 }
             }
             else {

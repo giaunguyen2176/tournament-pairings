@@ -142,7 +142,6 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
           }
 
           if (colors) {
-            debugWt.push(["colors", wt]);
             const colorScore = curr.colors.reduce(
               (sum, color) => (color === "w" ? sum + 1 : sum - 1),
               0
@@ -177,6 +176,8 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
             } else {
               wt += 5 / (4 * Math.log10(10 - Math.abs(colorScore - oppScore)));
             }
+
+            debugWt.push(["colors", wt]);
           }
         } else {
           debugWt.push([
