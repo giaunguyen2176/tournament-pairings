@@ -46,7 +46,7 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
 
   let pairs = [];
   let debugPairs = [];
-  let upperThreshold = 999;
+  
   for (let i = 0; i < playerArray.length; i++) {
       const curr = playerArray[i];
       const next = playerArray.slice(i + 1);
@@ -62,17 +62,18 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
       const reversedScoreGroups = [...scoreGroups].reverse();
       let evenHighThreshold = 999;
       let evenLowThreshold = 0;
-      let evenSlicePlayerCount = 0;
+      
+      let slicePlayers = [];
       
       for (let k = 0; k < reversedScoreGroups.length; k++) {
         const sg = reversedScoreGroups[k];
-        const count = scoreGroupPlayers[sg].length;
-        evenSlicePlayerCount += count;  
+        
+        slicePlayers = [...slicePlayers, ...scoreGroupPlayers[sg]];
 
-        if (evenSlicePlayerCount % 2 === 0) {
-          if (evenSlicePlayerCount === 2) {
-            const p1 = scoreGroupPlayers[sg][0];
-            const p2 = scoreGroupPlayers[sg][1];
+        if (slicePlayers.length % 2 === 0) {
+          if (slicePlayers.length === 2) {
+            const p1 = slicePlayers[0];
+            const p2 = slicePlayers[1];
 
             if (p1.avoid.includes(p2.id)) {
               continue;
@@ -80,8 +81,8 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
           }
 
           if (sg > curr.score) {
-            evenHighThreshold = sg
-            evenSlicePlayerCount = 0;
+            evenHighThreshold = sg;
+            slicePlayers = [];
             continue;
           }
 
@@ -95,7 +96,7 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
         curr.score,
         evenHighThreshold,
         evenLowThreshold,
-        evenSlicePlayerCount
+        slicePlayers.length
       );
 
       const evenSlicePlayers = playerArray.filter((p) => p.score < evenHighThreshold && p.score >= evenLowThreshold);

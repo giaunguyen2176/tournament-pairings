@@ -1184,29 +1184,28 @@
             const reversedScoreGroups = [...scoreGroups].reverse();
             let evenHighThreshold = 999;
             let evenLowThreshold = 0;
-            let evenSlicePlayerCount = 0;
+            let slicePlayers = [];
             for (let k = 0; k < reversedScoreGroups.length; k++) {
                 const sg = reversedScoreGroups[k];
-                const count = scoreGroupPlayers[sg].length;
-                evenSlicePlayerCount += count;
-                if (evenSlicePlayerCount % 2 === 0) {
-                    if (evenSlicePlayerCount === 2) {
-                        const p1 = scoreGroupPlayers[sg][0];
-                        const p2 = scoreGroupPlayers[sg][1];
+                slicePlayers = [...slicePlayers, ...scoreGroupPlayers[sg]];
+                if (slicePlayers.length % 2 === 0) {
+                    if (slicePlayers.length === 2) {
+                        const p1 = slicePlayers[0];
+                        const p2 = slicePlayers[1];
                         if (p1.avoid.includes(p2.id)) {
                             continue;
                         }
                     }
                     if (sg > curr.score) {
                         evenHighThreshold = sg;
-                        evenSlicePlayerCount = 0;
+                        slicePlayers = [];
                         continue;
                     }
                     evenLowThreshold = sg;
                     break;
                 }
             }
-            console.debug("score, evenHighThreshold, evenLowThreshold, evenSlicePlayerCount", curr.score, evenHighThreshold, evenLowThreshold, evenSlicePlayerCount);
+            console.debug("score, evenHighThreshold, evenLowThreshold, evenSlicePlayerCount", curr.score, evenHighThreshold, evenLowThreshold, slicePlayers.length);
             const evenSlicePlayers = playerArray.filter((p) => p.score < evenHighThreshold && p.score >= evenLowThreshold);
             console.log("evenSlicePlayers", evenSlicePlayers);
             const halfway = evenSlicePlayers.length / 2;
