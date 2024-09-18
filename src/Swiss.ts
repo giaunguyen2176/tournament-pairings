@@ -102,7 +102,7 @@ export function Swiss(
     );
 
     console.log("slicePlayers", slicePlayers);
-    const halfway = (slicePlayers.length + 1) / 2 - 1;
+    const halfway = (slicePlayers.length + 1) / 2;
 
     for (let j = 0; j < next.length; j++) {
       const opp = next[j];
@@ -119,8 +119,8 @@ export function Swiss(
       let wt = 14 * Math.log10(scoreSumIndex + 1);
       debugWt.push(["score", wt]);
 
-      const currIndex = slicePlayers.findIndex((p) => p.id === curr.id);
-      const oppIndex = slicePlayers.findIndex((p) => p.id === opp.id);
+      const currIndex = slicePlayers.findIndex((p) => p.id === curr.id) + 1;
+      const oppIndex = slicePlayers.findIndex((p) => p.id === opp.id) + 1;
 
       const swissIndex =
         Math.abs(oppIndex - currIndex - halfway) + currIndex / 5;

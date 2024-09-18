@@ -1204,7 +1204,7 @@
             }
             console.debug("score, highThreshold, lowThreshold, slicePlayerCount", curr.score, highThreshold, lowThreshold, slicePlayers.length);
             console.log("slicePlayers", slicePlayers);
-            const halfway = (slicePlayers.length + 1) / 2 - 1;
+            const halfway = (slicePlayers.length + 1) / 2;
             for (let j = 0; j < next.length; j++) {
                 const opp = next[j];
                 if (curr.hasOwnProperty("avoid") && curr.avoid.includes(opp.id)) {
@@ -1215,8 +1215,8 @@
                 const scoreSumIndex = scoreSums.findIndex((s) => s === curr.score + opp.score);
                 let wt = 14 * Math.log10(scoreSumIndex + 1);
                 debugWt.push(["score", wt]);
-                const currIndex = slicePlayers.findIndex((p) => p.id === curr.id);
-                const oppIndex = slicePlayers.findIndex((p) => p.id === opp.id);
+                const currIndex = slicePlayers.findIndex((p) => p.id === curr.id) + 1;
+                const oppIndex = slicePlayers.findIndex((p) => p.id === opp.id) + 1;
                 const swissIndex = Math.abs(oppIndex - currIndex - halfway) + currIndex / 5;
                 if (currIndex <= halfway && oppIndex > halfway) {
                     wt += 1.3 / Math.log10(swissIndex + 2);
