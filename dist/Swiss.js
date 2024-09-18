@@ -82,6 +82,7 @@ export function Swiss(players, round, rated = false, colors = false) {
             }
             else {
                 wt += 1 / Math.log10(swissIndex + 2);
+                debugWt.push(["no halfway", wt, oppIndex, currIndex, halfway, swissIndex]);
             }
             if (colors) {
                 const colorScore = curr.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);

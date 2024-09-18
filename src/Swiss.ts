@@ -129,6 +129,7 @@ export function Swiss(
         debugWt.push(["halfway", wt, oppIndex, currIndex, halfway, swissIndex]);
       } else {
         wt += 1 / Math.log10(swissIndex + 2);
+        debugWt.push(["no halfway", wt, oppIndex, currIndex, halfway, swissIndex]);
       }
 
       if (colors) {
