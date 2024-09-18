@@ -72,7 +72,7 @@ export function Swiss(players, round, rated = false, colors = false) {
             let debugWt = [];
             // prioritize pair with higher total score
             const scoreSumIndex = scoreSums.findIndex((s) => s === curr.score + opp.score);
-            let wt = 14 * Math.log10(scoreSumIndex + 1);
+            let wt = 20 * Math.log10(scoreSumIndex + 1);
             debugWt.push(["score", wt]);
             const currIndex = slicePlayers.findIndex((p) => p.id === curr.id);
             const oppIndex = slicePlayers.findIndex((p) => p.id === opp.id);
