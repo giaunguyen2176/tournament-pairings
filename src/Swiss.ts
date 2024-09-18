@@ -60,8 +60,8 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
 
       // sort rank from high to low
       const reversedScoreGroups = [...scoreGroups].reverse();
-      let evenHighThreshold = 999;
-      let evenLowThreshold = 0;
+      let highThreshold = curr.score;
+      let lowThreshold = 0;
       
       let slicePlayers = [];
       
@@ -70,38 +70,27 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
         
         slicePlayers = [...slicePlayers, ...scoreGroupPlayers[sg]];
 
-        if (slicePlayers.length % 2 === 0) {
-          if (slicePlayers.length === 2) {
-            const p1 = slicePlayers[0];
-            const p2 = slicePlayers[1];
+        const halfWay = (slicePlayers.length + 1) / 2;
+        const bottomHalf = slicePlayers.slice(halfWay);
+        
+        const pairable = bottomHalf.find((p) => !curr.avoid.includes(p.id));
 
-            if (p1.avoid.includes(p2.id)) {
-              continue;
-            }
-          }
-
-          if (sg > curr.score) {
-            evenHighThreshold = sg;
-            slicePlayers = [];
-            continue;
-          }
-
-          evenLowThreshold = sg;
+        if (pairable) {
+          lowThreshold = sg;
           break;
         }
       }
 
       console.debug(
-        "score, evenHighThreshold, evenLowThreshold, evenSlicePlayerCount",
+        "score, highThreshold, lowThreshold, slicePlayerCount",
         curr.score,
-        evenHighThreshold,
-        evenLowThreshold,
+        highThreshold,
+        lowThreshold,
         slicePlayers.length
       );
 
-      const evenSlicePlayers = playerArray.filter((p) => p.score < evenHighThreshold && p.score >= evenLowThreshold);
-      console.log("evenSlicePlayers", evenSlicePlayers);
-      const halfway = evenSlicePlayers.length / 2;
+      console.log("slicePlayers", slicePlayers);
+      const halfway = (slicePlayers.length + 1) / 2 - 1;
 
       for (let j = 0; j < next.length; j++) {
         const opp = next[j];
@@ -117,76 +106,56 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
         );
         let wt = 14 * Math.log10(scoreSumIndex + 1);
         debugWt.push(['score', wt]);
+        
+        const currIndex = slicePlayers.findIndex((p) => p.id === curr.id);
+        const oppIndex = slicePlayers.findIndex((p) => p.id === opp.id);
 
-        const isSameSlice = evenSlicePlayers.find((p) => p.id === opp.id);
-        const currIndex = evenSlicePlayers.findIndex((p) => p.id === curr.id);
-        const oppIndex = evenSlicePlayers.findIndex((p) => p.id === opp.id);
-        if (isSameSlice) {
-          if (currIndex < halfway && oppIndex >= halfway) {
-            const indexDiff = oppIndex - currIndex - halfway;
-            if (indexDiff >= -1) {
-              wt += 5 / Math.log10(currIndex + oppIndex + 3);
-            } else {
-              wt += 1 / Math.log10(2);
-            }
-            debugWt.push([
-              "halfway",
-              wt,
-              oppIndex,
-              currIndex,
-              halfway,
-              indexDiff,
-            ]);  
-          } else {
-            debugWt.push(["same half", wt, oppIndex, currIndex, halfway]);  
-          }
+        const swissIndex = Math.abs(oppIndex - currIndex - halfway) + currIndex / 5;
 
-          if (colors) {
-            const colorScore = curr.colors.reduce(
-              (sum, color) => (color === "w" ? sum + 1 : sum - 1),
-              0
-            );
-            const oppScore = opp.colors.reduce(
-              (sum, color) => (color === "w" ? sum + 1 : sum - 1),
-              0
-            );
-
-            if (
-              curr.colors.length > 1 &&
-              curr.colors.slice(-2).join("") === "ww"
-            ) {
-              if (opp.colors.slice(-2).join("") === "ww") {
-                continue;
-              } else if (opp.colors.slice(-2).join("") === "bb") {
-                wt += 7;
-              } else {
-                wt += 2 / Math.log(4 - Math.abs(oppScore));
-              }
-            } else if (
-              curr.colors.length > 1 &&
-              curr.colors.slice(-2).join("") === "bb"
-            ) {
-              if (opp.colors.slice(-2).join("") === "bb") {
-                continue;
-              } else if (opp.colors.slice(-2).join("") === "ww") {
-                wt += 8;
-              } else {
-                wt += 2 / Math.log(4 - Math.abs(oppScore));
-              }
-            } else {
-              wt += 5 / (4 * Math.log10(10 - Math.abs(colorScore - oppScore)));
-            }
-
-            debugWt.push(["colors", wt]);
-          }
+        if (currIndex <= halfway && oppIndex > halfway) {
+          wt += 3 / Math.log10(swissIndex + 3);
+          debugWt.push(["halfway", wt, oppIndex, currIndex, halfway, swissIndex]);
         } else {
-          debugWt.push([
-            "not same slice",
-            wt,
-            oppIndex,
-            currIndex,
-            halfway,
-          ]);  
+          wt += 1 / Math.log10(swissIndex + 2);
+        }
+
+        if (colors) {
+          const colorScore = curr.colors.reduce(
+            (sum, color) => (color === "w" ? sum + 1 : sum - 1),
+            0
+          );
+          const oppScore = opp.colors.reduce(
+            (sum, color) => (color === "w" ? sum + 1 : sum - 1),
+            0
+          );
+
+          if (
+            curr.colors.length > 1 &&
+            curr.colors.slice(-2).join("") === "ww"
+          ) {
+            if (opp.colors.slice(-2).join("") === "ww") {
+              continue;
+            } else if (opp.colors.slice(-2).join("") === "bb") {
+              wt += 7;
+            } else {
+              wt += 2 / Math.log(4 - Math.abs(oppScore));
+            }
+          } else if (
+            curr.colors.length > 1 &&
+            curr.colors.slice(-2).join("") === "bb"
+          ) {
+            if (opp.colors.slice(-2).join("") === "bb") {
+              continue;
+            } else if (opp.colors.slice(-2).join("") === "ww") {
+              wt += 8;
+            } else {
+              wt += 2 / Math.log(4 - Math.abs(oppScore));
+            }
+          } else {
+            wt += 5 / (4 * Math.log10(10 - Math.abs(colorScore - oppScore)));
+          }
+
+          debugWt.push(["colors", wt]);
         }
 
         if (rated) {
@@ -197,20 +166,21 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
           debugWt.push(["rated", wt]);
         }
         
-        if (opp.hasOwnProperty("receivedBye") && opp.receivedBye) {
-          const currGroupIndex = scoreGroups.findIndex((s) => s === curr.score);
-          const oppGroupIndex = scoreGroups.findIndex((s) => s === opp.score);
-          const scoreGroupDiff = Math.abs(currGroupIndex - oppGroupIndex);
-          if (oppGroupIndex < 2) {
-            if (scoreGroupDiff < 2) {
-              wt += 3 / Math.log10(scoreGroupDiff + 2);
-              debugWt.push(["bye with low diff", wt]);
-            } else {
-              wt += 5 / Math.log10(scoreGroupDiff + 2);
-              debugWt.push(["bye with high diff", wt]);
-            }
-          }
-        }
+        // if (opp.hasOwnProperty("receivedBye") && opp.receivedBye) {
+        //   const currGroupIndex = scoreGroups.findIndex((s) => s === curr.score);
+        //   const oppGroupIndex = scoreGroups.findIndex((s) => s === opp.score);
+        //   const scoreGroupDiff = Math.abs(currGroupIndex - oppGroupIndex);
+        //   if (oppGroupIndex < 2) {
+        //     if (scoreGroupDiff < 2) {
+        //       wt += 3 / Math.log10(scoreGroupDiff + 2);
+        //       debugWt.push(["bye with low diff", wt]);
+        //     } else {
+        //       wt += 5 / Math.log10(scoreGroupDiff + 2);
+        //       debugWt.push(["bye with high diff", wt]);
+        //     }
+        //   }
+        // }
+
         pairs.push([curr.index, opp.index, wt]);
         debugPairs.push([curr.index, opp.index, wt, debugWt]);
       }
