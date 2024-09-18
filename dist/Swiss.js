@@ -74,8 +74,8 @@ export function Swiss(players, round, rated = false, colors = false) {
             const scoreSumIndex = scoreSums.findIndex((s) => s === curr.score + opp.score);
             let wt = 14 * Math.log10(scoreSumIndex + 1);
             debugWt.push(["score", wt]);
-            const currIndex = slicePlayers.findIndex((p) => p.id === curr.id) + 1;
-            const oppIndex = slicePlayers.findIndex((p) => p.id === opp.id) + 1;
+            const currIndex = slicePlayers.findIndex((p) => p.id === curr.id);
+            const oppIndex = slicePlayers.findIndex((p) => p.id === opp.id);
             const swissIndex = Math.abs(oppIndex - currIndex - halfway) + currIndex / 5;
             if (currIndex < halfway && oppIndex >= halfway) {
                 wt += 1.3 / Math.log10(swissIndex + 2);
