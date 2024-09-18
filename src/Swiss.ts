@@ -154,11 +154,10 @@ export function Swiss(
         scoreGroups.findIndex((s) => s === curr.score) -
           scoreGroups.findIndex((s) => s === opp.score)
       );
-
       wtt =
         scoreGroupDiff < 2
-          ? 3 / Math.log10(scoreGroupDiff + 2)
-          : 1 / Math.log10(scoreGroupDiff + 2);
+          ? 1 / Math.log10(1 + 2)
+          : 0;
       
       wt += wtt;
       
