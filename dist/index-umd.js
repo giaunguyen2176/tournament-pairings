@@ -1150,20 +1150,28 @@
             playerArray = [...new Array(players)].map((_, i) => i + 1);
         }
         if (rated) {
-            playerArray.filter(p => !p.hasOwnProperty('rating') || p.rating === null).forEach(p => p.rating = 0);
+            playerArray
+                .filter((p) => !p.hasOwnProperty("rating") || p.rating === null)
+                .forEach((p) => (p.rating = 0));
         }
         if (colors) {
-            playerArray.filter(p => !p.hasOwnProperty('colors')).forEach(p => p.colors = []);
+            playerArray
+                .filter((p) => !p.hasOwnProperty("colors"))
+                .forEach((p) => (p.colors = []));
         }
-        playerArray.forEach((p, i) => p.index = i);
-        const scoreGroups = [...new Set(playerArray.map(p => p.score))].sort((a, b) => a - b);
-        const scoreSums = [...new Set(scoreGroups.map((s, i, a) => {
+        playerArray.forEach((p, i) => (p.index = i));
+        const scoreGroups = [...new Set(playerArray.map((p) => p.score))].sort((a, b) => a - b);
+        const scoreSums = [
+            ...new Set(scoreGroups
+                .map((s, i, a) => {
                 let sums = [];
                 for (let j = i; j < a.length; j++) {
                     sums.push(s + a[j]);
                 }
                 return sums;
-            }).flat())].sort((a, b) => a - b);
+            })
+                .flat()),
+        ].sort((a, b) => a - b);
         const scoreGroupPlayers = scoreGroups.reduce((sgps, sg) => {
             sgps[sg] = playerArray.filter((p) => p.score === sg);
             return sgps;
@@ -1176,17 +1184,13 @@
         for (let i = 0; i < playerArray.length; i++) {
             const curr = playerArray[i];
             const next = playerArray.slice(i + 1);
-            const sorted = rated
-                ? [...next].sort((a, b) => Math.abs(curr.rating - a.rating) -
-                    Math.abs(curr.rating - b.rating))
-                : [];
+            const sorted = rated ? [...next] : [];
             // sort rank from high to low
             const reversedScoreGroups = [...scoreGroups].reverse();
             let highThreshold = curr.score;
             let lowThreshold = 0;
             let slicePlayers = [];
-            let k = reversedScoreGroups.findIndex((sg) => sg === curr.score);
-            for (; k < reversedScoreGroups.length; k++) {
+            for (let k = 0; k < reversedScoreGroups.length; k++) {
                 const sg = reversedScoreGroups[k];
                 slicePlayers = [...slicePlayers, ...scoreGroupPlayers[sg]];
                 const halfWay = (slicePlayers.length + 1) / 2;
@@ -1209,12 +1213,12 @@
                 // prioritize pair with higher total score
                 const scoreSumIndex = scoreSums.findIndex((s) => s === curr.score + opp.score);
                 let wt = 14 * Math.log10(scoreSumIndex + 1);
-                debugWt.push(['score', wt]);
+                debugWt.push(["score", wt]);
                 const currIndex = slicePlayers.findIndex((p) => p.id === curr.id);
                 const oppIndex = slicePlayers.findIndex((p) => p.id === opp.id);
                 const swissIndex = Math.abs(oppIndex - currIndex - halfway) + currIndex / 5;
                 if (currIndex <= halfway && oppIndex > halfway) {
-                    wt += 3 / Math.log10(swissIndex + 3);
+                    wt += 1.3 / Math.log10(swissIndex + 2);
                     debugWt.push(["halfway", wt, oppIndex, currIndex, halfway, swissIndex]);
                 }
                 else {
@@ -1223,8 +1227,7 @@
                 if (colors) {
                     const colorScore = curr.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
                     const oppScore = opp.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
-                    if (curr.colors.length > 1 &&
-                        curr.colors.slice(-2).join("") === "ww") {
+                    if (curr.colors.length > 1 && curr.colors.slice(-2).join("") === "ww") {
                         if (opp.colors.slice(-2).join("") === "ww") {
                             continue;
                         }
@@ -1296,15 +1299,16 @@
                 continue;
             }
             playerCopy.splice(0, 1);
-            playerCopy.splice(playerCopy.findIndex(p => p.index === indexB), 1);
-            let playerA = playerArray.find(p => p.index === indexA);
-            let playerB = playerArray.find(p => p.index === indexB);
+            playerCopy.splice(playerCopy.findIndex((p) => p.index === indexB), 1);
+            let playerA = playerArray.find((p) => p.index === indexA);
+            let playerB = playerArray.find((p) => p.index === indexB);
             if (colors) {
-                const aScore = playerA.colors.reduce((sum, color) => color === 'w' ? sum + 1 : sum - 1, 0);
-                const bScore = playerB.colors.reduce((sum, color) => color === 'w' ? sum + 1 : sum - 1, 0);
-                if (playerB.colors.slice(-2).join('') === 'bb' ||
-                    playerA.colors.slice(-2).join('') === 'ww' ||
-                    (playerB.colors.slice(-1) === 'b' && playerA.colors.slice(-1) === 'w') ||
+                const aScore = playerA.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
+                const bScore = playerB.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
+                if (playerB.colors.slice(-2).join("") === "bb" ||
+                    playerA.colors.slice(-2).join("") === "ww" ||
+                    (playerB.colors.slice(-1) === "b" &&
+                        playerA.colors.slice(-1) === "w") ||
                     bScore < aScore) {
                     [playerA, playerB] = [playerB, playerA];
                 }
@@ -1313,16 +1317,17 @@
                 round: round,
                 match: match++,
                 player1: playerA.id,
-                player2: playerB.id
+                player2: playerB.id,
             });
-        } while (playerCopy.length > blossomPairs.reduce((sum, idx) => idx === -1 ? sum + 1 : sum, 0));
+        } while (playerCopy.length >
+            blossomPairs.reduce((sum, idx) => (idx === -1 ? sum + 1 : sum), 0));
         byeArray = [...byeArray, ...playerCopy];
         for (let i = 0; i < byeArray.length; i++) {
             matches.push({
                 round: round,
                 match: match++,
                 player1: byeArray[i].id,
-                player2: null
+                player2: null,
             });
         }
         return matches;
