@@ -76,8 +76,11 @@ export function Swiss(
 
     let slicePlayers = [];
     let k = reversedScoreGroups.findIndex((sg) => sg === curr.score);
-    
-    for (; k < reversedScoreGroups.length; k++) {
+    let topPlayerCount = playerArray.filter((p) => p.score >= curr.score).length;
+    let maxK =
+      topPlayerCount % 2 === 0 ? k + 1 : reversedScoreGroups.length;
+
+    for (; k < maxK; k++) {
       const sg = reversedScoreGroups[k];
 
       slicePlayers = [...slicePlayers, ...scoreGroupPlayers[sg]];
