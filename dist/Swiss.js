@@ -44,7 +44,8 @@ export function Swiss(players, round, rated = false, colors = false) {
         let highThreshold = curr.score;
         let lowThreshold = 0;
         let slicePlayers = [];
-        for (let k = 0; k < reversedScoreGroups.length; k++) {
+        let k = reversedScoreGroups.findIndex((sg) => sg === curr.score);
+        for (; k < reversedScoreGroups.length; k++) {
             const sg = reversedScoreGroups[k];
             slicePlayers = [...slicePlayers, ...scoreGroupPlayers[sg]];
             const halfWay = (slicePlayers.length + 1) / 2;

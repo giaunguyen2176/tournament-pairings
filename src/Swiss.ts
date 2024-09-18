@@ -64,8 +64,9 @@ export function Swiss(players: Player[], round: number, rated: boolean = false, 
       let lowThreshold = 0;
       
       let slicePlayers = [];
+      let k = reversedScoreGroups.findIndex((sg) => sg === curr.score);
       
-      for (let k = 0; k < reversedScoreGroups.length; k++) {
+      for (; k < reversedScoreGroups.length; k++) {
         const sg = reversedScoreGroups[k];
         
         slicePlayers = [...slicePlayers, ...scoreGroupPlayers[sg]];
