@@ -116,7 +116,7 @@ export function Swiss(
       const scoreSumIndex = scoreSums.findIndex(
         (s) => s === curr.score + opp.score
       );
-      let wt = 20 * Math.log10(scoreSumIndex + 1);
+      let wt = 28 * Math.log10(scoreSumIndex + 1);
       debugWt.push(["score", wt]);
 
       const currIndex = slicePlayers.findIndex((p) => p.id === curr.id);
