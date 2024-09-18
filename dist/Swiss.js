@@ -53,7 +53,7 @@ export function Swiss(players, round, rated = false, colors = false) {
         for (; k < reversedScoreGroups.length; k++) {
             const sg = reversedScoreGroups[k];
             slicePlayers = [...slicePlayers, ...scoreGroupPlayers[sg]];
-            const halfWay = (slicePlayers.length + 1) / 2;
+            const halfWay = Math.floor((slicePlayers.length + 1) / 2);
             const bottomHalf = slicePlayers.slice(halfWay);
             const pairable = bottomHalf.find((p) => !curr.avoid.includes(p.id));
             if (pairable) {
@@ -63,7 +63,7 @@ export function Swiss(players, round, rated = false, colors = false) {
         }
         console.debug("score, highThreshold, lowThreshold, slicePlayerCount", curr.score, highThreshold, lowThreshold, slicePlayers.length);
         console.log("slicePlayers", slicePlayers);
-        const halfway = (slicePlayers.length + 1) / 2;
+        const halfway = Math.floor((slicePlayers.length + 1) / 2);
         for (let j = 0; j < next.length; j++) {
             const opp = next[j];
             if (curr.hasOwnProperty("avoid") && curr.avoid.includes(opp.id)) {
@@ -77,7 +77,7 @@ export function Swiss(players, round, rated = false, colors = false) {
             const currIndex = slicePlayers.findIndex((p) => p.id === curr.id) + 1;
             const oppIndex = slicePlayers.findIndex((p) => p.id === opp.id) + 1;
             const swissIndex = Math.abs(oppIndex - currIndex - halfway) + currIndex / 5;
-            if (currIndex <= halfway && oppIndex > halfway) {
+            if (currIndex < halfway && oppIndex >= halfway) {
                 wt += 1.3 / Math.log10(swissIndex + 2);
                 debugWt.push(["halfway", wt, oppIndex, currIndex, halfway, swissIndex]);
             }

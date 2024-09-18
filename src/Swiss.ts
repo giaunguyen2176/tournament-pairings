@@ -82,7 +82,7 @@ export function Swiss(
 
       slicePlayers = [...slicePlayers, ...scoreGroupPlayers[sg]];
 
-      const halfWay = (slicePlayers.length + 1) / 2;
+      const halfWay = Math.floor((slicePlayers.length + 1) / 2);
       const bottomHalf = slicePlayers.slice(halfWay);
 
       const pairable = bottomHalf.find((p) => !curr.avoid.includes(p.id));
@@ -102,7 +102,7 @@ export function Swiss(
     );
 
     console.log("slicePlayers", slicePlayers);
-    const halfway = (slicePlayers.length + 1) / 2;
+    const halfway = Math.floor((slicePlayers.length + 1) / 2);
 
     for (let j = 0; j < next.length; j++) {
       const opp = next[j];
@@ -125,7 +125,7 @@ export function Swiss(
       const swissIndex =
         Math.abs(oppIndex - currIndex - halfway) + currIndex / 5;
 
-      if (currIndex <= halfway && oppIndex > halfway) {
+      if (currIndex < halfway && oppIndex >= halfway) {
         wt += 1.3 / Math.log10(swissIndex + 2);
         debugWt.push(["halfway", wt, oppIndex, currIndex, halfway, swissIndex]);
       } else {
