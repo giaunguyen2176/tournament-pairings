@@ -116,7 +116,7 @@ export function Swiss(
       const scoreSumIndex = scoreSums.findIndex(
         (s) => s === curr.score + opp.score
       );
-      let wt = 28 * Math.log10(scoreSumIndex + 1);
+      let wt = 14 * Math.log10(scoreSumIndex + 1);
       debugWt.push(["score", wt]);
 
       const currIndex = slicePlayers.findIndex((p) => p.id === curr.id);
@@ -132,6 +132,18 @@ export function Swiss(
         wt += 1 / Math.log10(swissIndex + 2);
         debugWt.push(["no halfway", wt, oppIndex, currIndex, halfway, swissIndex]);
       }
+
+      const scoreGroupDiff = Math.abs(
+        scoreGroups.findIndex((s) => s === curr.score) -
+          scoreGroups.findIndex((s) => s === opp.score)
+      );
+
+      wt +=
+        scoreGroupDiff < 2
+          ? 3 / Math.log10(scoreGroupDiff + 2)
+          : 1 / Math.log10(scoreGroupDiff + 2);
+      
+      debugWt.push(["group diff", wt, scoreGroupDiff]);
 
       if (colors) {
         const colorScore = curr.colors.reduce(
