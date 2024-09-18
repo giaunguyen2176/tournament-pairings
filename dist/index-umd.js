@@ -1214,7 +1214,7 @@
                 // prioritize pair with higher total score
                 const scoreSumIndex = scoreSums.findIndex((s) => s === curr.score + opp.score);
                 let wtt = 0;
-                let wt = 14 * Math.log10(scoreSumIndex + 1);
+                let wt = 36 * Math.log10(scoreSumIndex + 1);
                 debugWt.push(["score", wt]);
                 const currIndex = slicePlayers.findIndex((p) => p.id === curr.id);
                 const oppIndex = slicePlayers.findIndex((p) => p.id === opp.id);
