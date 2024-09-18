@@ -1213,26 +1213,44 @@
                 let debugWt = [];
                 // prioritize pair with higher total score
                 const scoreSumIndex = scoreSums.findIndex((s) => s === curr.score + opp.score);
+                let wtt = 0;
                 let wt = 14 * Math.log10(scoreSumIndex + 1);
                 debugWt.push(["score", wt]);
                 const currIndex = slicePlayers.findIndex((p) => p.id === curr.id);
                 const oppIndex = slicePlayers.findIndex((p) => p.id === opp.id);
                 const swissIndex = Math.abs(oppIndex - currIndex - halfway) + currIndex / 5;
                 if (currIndex < halfway && oppIndex >= halfway) {
-                    wt += 1.3 / Math.log10(swissIndex + 2);
-                    debugWt.push(["halfway", wt, oppIndex, currIndex, halfway, swissIndex]);
+                    wtt = 1.3 / Math.log10(swissIndex + 2);
+                    wt += wtt;
+                    debugWt.push([
+                        "halfway",
+                        wtt,
+                        oppIndex,
+                        currIndex,
+                        halfway,
+                        swissIndex,
+                    ]);
                 }
                 else {
-                    wt += 1 / Math.log10(swissIndex + 2);
-                    debugWt.push(["no halfway", wt, oppIndex, currIndex, halfway, swissIndex]);
+                    wtt = 1 / Math.log10(swissIndex + 2);
+                    wt += wtt;
+                    debugWt.push([
+                        "no halfway",
+                        wtt,
+                        oppIndex,
+                        currIndex,
+                        halfway,
+                        swissIndex,
+                    ]);
                 }
                 const scoreGroupDiff = Math.abs(scoreGroups.findIndex((s) => s === curr.score) -
                     scoreGroups.findIndex((s) => s === opp.score));
-                wt +=
+                wtt =
                     scoreGroupDiff < 2
                         ? 3 / Math.log10(scoreGroupDiff + 2)
                         : 1 / Math.log10(scoreGroupDiff + 2);
-                debugWt.push(["group diff", wt, scoreGroupDiff]);
+                wt += wtt;
+                debugWt.push(["group diff", wtt, scoreGroupDiff]);
                 if (colors) {
                     const colorScore = curr.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
                     const oppScore = opp.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
