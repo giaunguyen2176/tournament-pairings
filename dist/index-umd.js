@@ -1239,12 +1239,11 @@
             const prevSg = reversedScoreGroups[k - 1];
             const floatersFromPreviousGroup = prevSg ? floatersByScore[prevSg] : [];
             const currentGroupPlayers = scoreGroupPlayers[sg];
-            floatersByScore[sg] = findFloaters([
-                ...floatersFromPreviousGroup,
-                ...currentGroupPlayers,
-            ]);
+            const slicePlayers = [...floatersFromPreviousGroup, ...currentGroupPlayers];
+            console.debug('find floaters', sg, slicePlayers);
+            floatersByScore[sg] = findFloaters(slicePlayers);
             const floaterIds = floatersByScore[sg].map((p1) => p1.id);
-            slicePlayersByScore[sg] = scoreGroupPlayers[sg].filter((p) => {
+            slicePlayersByScore[sg] = slicePlayers.filter((p) => {
                 return !floaterIds.includes(p.id);
             });
         }
