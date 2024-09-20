@@ -1335,8 +1335,8 @@
                     else {
                         wtt = 5 / (4 * Math.log10(10 - Math.abs(colorScore - oppScore)));
                     }
-                    wt += wtt / 2;
-                    debugWt.push(["colors", wtt]);
+                    wt += wtt / 4;
+                    debugWt.push(["colors", wtt / 4]);
                 }
                 if (rated) {
                     wt +=
