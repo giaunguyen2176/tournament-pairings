@@ -1141,6 +1141,7 @@
     var blossom$1 = /*@__PURE__*/getDefaultExportFromCjs(blossom);
 
     function findFloaters(players) {
+        var _a, _b, _c, _d;
         const floaters = [];
         for (let i = 0; i < players.length; i++) {
             const player = players[i];
@@ -1150,19 +1151,21 @@
                 floaters.push([player, pairable]);
                 continue;
             }
-            const currScore = player.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
+            const currScore = (_b = (_a = player.colors) === null || _a === void 0 ? void 0 : _a.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0)) !== null && _b !== void 0 ? _b : 0;
             const pairableByColorScore = others.find((p) => {
-                const oppScore = p.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
+                var _a, _b;
+                const oppScore = (_b = (_a = p.colors) === null || _a === void 0 ? void 0 : _a.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0)) !== null && _b !== void 0 ? _b : 0;
                 return Math.abs(currScore + oppScore) !== 4;
             });
             if (!pairableByColorScore) {
                 floaters.push([player, pairableByColorScore]);
                 continue;
             }
-            const currColors = player.colors.slice(-2).join("");
+            const currColors = (_d = (_c = player.colors) === null || _c === void 0 ? void 0 : _c.slice(-2).join("")) !== null && _d !== void 0 ? _d : '';
             if (currColors === 'ww' || currColors === 'bb') {
                 const pairableByColor = others.find((p) => {
-                    const oppColors = p.colors.slice(-2).join("");
+                    var _a, _b;
+                    const oppColors = (_b = (_a = p.colors) === null || _a === void 0 ? void 0 : _a.slice(-2).join("")) !== null && _b !== void 0 ? _b : '';
                     return ((currColors === "ww" && oppColors !== "ww") ||
                         (currColors === "bb" && oppColors !== "bb"));
                 });

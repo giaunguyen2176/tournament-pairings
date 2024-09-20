@@ -23,16 +23,16 @@ function findFloaters(players: Player[]) {
       continue;
     }
 
-    const currScore = player.colors.reduce(
+    const currScore = player.colors?.reduce(
       (sum, color) => (color === "w" ? sum + 1 : sum - 1),
       0
-    );
+    ) ?? 0;
     
     const pairableByColorScore = others.find((p) => {
-      const oppScore = p.colors.reduce(
+      const oppScore = p.colors?.reduce(
         (sum, color) => (color === "w" ? sum + 1 : sum - 1),
         0
-      );
+      ) ?? 0;
 
       return Math.abs(currScore + oppScore) !== 4;
     });
@@ -42,11 +42,11 @@ function findFloaters(players: Player[]) {
       continue;
     }
 
-    const currColors = player.colors.slice(-2).join("");
+    const currColors = player.colors?.slice(-2).join("") ?? '';
 
     if (currColors === 'ww' || currColors === 'bb') {
       const pairableByColor = others.find((p) => {
-        const oppColors = p.colors.slice(-2).join("");
+        const oppColors = p.colors?.slice(-2).join("") ?? '';
         return (
           (currColors === "ww" && oppColors !== "ww") ||
           (currColors === "bb" && oppColors !== "bb")
