@@ -1146,7 +1146,7 @@
         for (let i = 0; i < players.length; i++) {
             const player = players[i];
             const others = players.filter((p) => p.id !== player.id);
-            const pairable = others.find((p) => !p.avoid.includes(player.id));
+            const pairable = others.find((p) => { var _a, _b; return !((_b = (_a = p.avoid) === null || _a === void 0 ? void 0 : _a.includes(player.id)) !== null && _b !== void 0 ? _b : false); });
             if (!pairable) {
                 floaters.push([player, pairable]);
                 continue;

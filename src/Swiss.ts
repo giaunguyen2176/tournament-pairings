@@ -16,7 +16,7 @@ function findFloaters(players: Player[]) {
   for (let i = 0; i < players.length; i++) {
     const player = players[i];
     const others = players.filter((p: Player) => p.id !== player.id);
-    const pairable = others.find((p) => !p.avoid.includes(player.id));
+    const pairable = others.find((p) => !(p.avoid?.includes(player.id) ?? false));
     
     if (!pairable) {
       floaters.push([player, pairable]);
