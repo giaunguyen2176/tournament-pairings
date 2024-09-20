@@ -105,8 +105,9 @@ export function Swiss(players, round, rated = false, colors = false) {
         const floatersFromPreviousGroup = prevSg ? floatersByScore[prevSg] : [];
         const currentGroupPlayers = scoreGroupPlayers[sg];
         const slicePlayers = [...floatersFromPreviousGroup, ...currentGroupPlayers];
+        console.debug("find floaters", sg, slicePlayers);
         floatersByScore[sg] = findFloaters(slicePlayers);
-        console.debug("find floaters", sg, slicePlayers, floatersByScore[sg]);
+        console.debug("find floaters result: ", floatersByScore[sg]);
         const floaterIds = floatersByScore[sg].map((p1) => p1.id);
         slicePlayersByScore[sg] = slicePlayers.filter((p) => {
             return !floaterIds.includes(p.id);
