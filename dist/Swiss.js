@@ -1,4 +1,42 @@
 import blossom from "edmonds-blossom-fixed";
+function findFloaters(players) {
+    const floaters = [];
+    for (let i = 0; i < players.length; i++) {
+        const player = players[i];
+        const others = players.filter((p) => p.id !== player.id);
+        const pairable = others.find((p) => !p.avoid.includes(player.id));
+        if (!pairable) {
+            floaters.push(player);
+            continue;
+        }
+        const currScore = player.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
+        const pairableByColorScore = others.find((p) => {
+            const oppScore = p.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
+            return Math.abs(currScore + oppScore) !== 4;
+        });
+        if (!pairableByColorScore) {
+            floaters.push(player);
+            continue;
+        }
+        const currColors = player.colors.slice(-2).join("");
+        const pairableByColor = others.find((p) => {
+            const oppColors = p.colors.slice(-2).join("");
+            return (currColors === 'ww' && oppColors !== 'ww') || (currColors === 'bb' && oppColors !== 'bb');
+        });
+        if (!pairableByColor) {
+            floaters.push(player);
+            continue;
+        }
+    }
+    if (players.length % 2 === 0) {
+        return floaters;
+    }
+    const middle = players[Math.floor(players.length / 2)];
+    if (middle) {
+        floaters.push(middle);
+    }
+    return floaters;
+}
 export function Swiss(players, round, rated = false, colors = false) {
     const matches = [];
     let playerArray = [];
@@ -38,34 +76,34 @@ export function Swiss(players, round, rated = false, colors = false) {
     console.log("score sums", scoreSums);
     console.log("score groups", scoreGroups);
     console.log("scoreGroupPlayers", scoreGroupPlayers);
+    // find floaters by each score group
+    const reversedScoreGroups = [...scoreGroups].reverse();
+    let floatersByScore = {};
+    let slicePlayersByScore = {};
+    for (let k = 0; k < reversedScoreGroups.length; k++) {
+        const sg = reversedScoreGroups[k];
+        const prevSg = reversedScoreGroups[k - 1];
+        const floatersFromPreviousGroup = prevSg ? floatersByScore[prevSg] : [];
+        const currentGroupPlayers = scoreGroupPlayers[sg];
+        floatersByScore[sg] = findFloaters([
+            ...floatersFromPreviousGroup,
+            ...currentGroupPlayers,
+        ]);
+        const floaterIds = floatersByScore[sg].map((p1) => p1.id);
+        slicePlayersByScore[sg] = scoreGroupPlayers[sg].filter((p) => {
+            return !floaterIds.includes(p.id);
+        });
+    }
+    console.debug("floatersByScore", floatersByScore);
+    console.debug("slicePlayersByScore", slicePlayersByScore);
     let pairs = [];
     let debugPairs = [];
     for (let i = 0; i < playerArray.length; i++) {
         const curr = playerArray[i];
         const next = playerArray.slice(i + 1);
-        const sorted = rated ? [...next] : [];
-        // sort rank from high to low
-        const reversedScoreGroups = [...scoreGroups].reverse();
-        let highThreshold = curr.score;
-        let lowThreshold = 0;
-        let slicePlayers = [];
-        let k = reversedScoreGroups.findIndex((sg) => sg === curr.score);
-        let topPlayerCount = playerArray.filter((p) => p.score >= curr.score).length;
-        let maxK = topPlayerCount % 2 === 0 ? k + 1 : reversedScoreGroups.length;
-        for (; k < maxK; k++) {
-            const sg = reversedScoreGroups[k];
-            slicePlayers = [...slicePlayers, ...scoreGroupPlayers[sg]];
-            const halfWay = Math.floor((slicePlayers.length + 1) / 2);
-            const bottomHalf = slicePlayers.slice(halfWay);
-            const pairable = bottomHalf.find((p) => !curr.avoid.includes(p.id));
-            if (pairable) {
-                lowThreshold = sg;
-                break;
-            }
-        }
-        console.debug("score, highThreshold, lowThreshold, slicePlayerCount", curr.score, highThreshold, lowThreshold, slicePlayers.length);
-        console.log("slicePlayers", slicePlayers);
+        const slicePlayers = slicePlayersByScore[curr.score];
         const halfway = Math.floor((slicePlayers.length + 1) / 2);
+        console.debug("slicePlayers", curr.score, halfway, slicePlayers);
         for (let j = 0; j < next.length; j++) {
             const opp = next[j];
             if (curr.hasOwnProperty("avoid") && curr.avoid.includes(opp.id)) {
@@ -76,43 +114,36 @@ export function Swiss(players, round, rated = false, colors = false) {
             const scoreSumIndex = scoreSums.findIndex((s) => s === curr.score + opp.score);
             let wtt = 0;
             let wt = 2 * scoreSumIndex;
-            // let wt = 36 * Math.log10(scoreSumIndex + 1);
             debugWt.push(["score", wt]);
             const currIndex = slicePlayers.findIndex((p) => p.id === curr.id);
             const oppIndex = slicePlayers.findIndex((p) => p.id === opp.id);
-            const swissIndex = Math.abs(oppIndex - currIndex - halfway) + currIndex / 5;
-            if (currIndex < halfway && oppIndex >= halfway) {
-                wtt = 1.3 / Math.log10(swissIndex + 2);
-                wt += wtt;
-                debugWt.push([
-                    "halfway",
-                    wtt,
-                    oppIndex,
-                    currIndex,
-                    halfway,
-                    swissIndex,
-                ]);
+            if (currIndex > -1 && oppIndex < -1) {
+                const swissIndex = Math.abs(oppIndex - currIndex - halfway) + currIndex / 5;
+                if (currIndex < halfway && oppIndex >= halfway) {
+                    wtt = 1.3 / Math.log10(swissIndex + 2);
+                    wt += wtt;
+                    debugWt.push([
+                        "swiss halfway",
+                        wtt,
+                        oppIndex,
+                        currIndex,
+                        halfway,
+                        swissIndex,
+                    ]);
+                }
+                else {
+                    wtt = 1 / Math.log10(swissIndex + 2);
+                    wt += wtt;
+                    debugWt.push([
+                        "swiss no halfway",
+                        wtt,
+                        oppIndex,
+                        currIndex,
+                        halfway,
+                        swissIndex,
+                    ]);
+                }
             }
-            else {
-                wtt = 1 / Math.log10(swissIndex + 2);
-                wt += wtt;
-                debugWt.push([
-                    "no halfway",
-                    wtt,
-                    oppIndex,
-                    currIndex,
-                    halfway,
-                    swissIndex,
-                ]);
-            }
-            const scoreGroupDiff = Math.abs(scoreGroups.findIndex((s) => s === curr.score) -
-                scoreGroups.findIndex((s) => s === opp.score));
-            wtt =
-                scoreGroupDiff < 2
-                    ? 1 / Math.log10(1 + 2)
-                    : 0;
-            wt += wtt;
-            debugWt.push(["group diff", wtt, scoreGroupDiff]);
             if (colors) {
                 const colorScore = curr.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
                 const oppScore = opp.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
@@ -146,8 +177,8 @@ export function Swiss(players, round, rated = false, colors = false) {
             }
             if (rated) {
                 wt +=
-                    (Math.log2(sorted.length) -
-                        Math.log2(sorted.findIndex((p) => p.id === opp.id) + 1)) /
+                    (Math.log2(next.length) -
+                        Math.log2(next.findIndex((p) => p.id === opp.id) + 1)) /
                         3;
                 debugWt.push(["rated", wt]);
             }
