@@ -85,7 +85,7 @@ function findFloaters(players: Player[]) {
   
   if (middle) {
     console.debug("float: odd", middle.id);
-    floaters.push([middle, remain]);
+    floaters.push(middle);
   }
 
   return floaters;

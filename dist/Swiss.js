@@ -52,7 +52,7 @@ function findFloaters(players) {
     const middle = remain[Math.floor(remain.length / 2)];
     if (middle) {
         console.debug("float: odd", middle.id);
-        floaters.push([middle, remain]);
+        floaters.push(middle);
     }
     return floaters;
 }
