@@ -242,9 +242,9 @@ export function Swiss(
           if (opp.colors.slice(-2).join("") === "ww") {
             continue;
           } else if (opp.colors.slice(-2).join("") === "bb") {
-            wtt = 7;
+            wtt = 1.3 / Math.log10(Math.abs(oppScore) + 2);
           } else {
-            wtt = 2 / Math.log(4 - Math.abs(oppScore));
+            wtt = 1 / Math.log10(Math.abs(oppScore) + 2);
           }
         } else if (
           curr.colors.length > 1 &&
@@ -253,12 +253,12 @@ export function Swiss(
           if (opp.colors.slice(-2).join("") === "bb") {
             continue;
           } else if (opp.colors.slice(-2).join("") === "ww") {
-            wtt = 8;
+            wtt = 1.5 / Math.log10(Math.abs(oppScore) + 2);
           } else {
-            wtt = 2 / Math.log(4 - Math.abs(oppScore));
+            wtt = 1 / Math.log10(Math.abs(oppScore) + 2);
           }
         } else {
-          wtt = 5 / (4 * Math.log10(10 - Math.abs(colorScore - oppScore)));
+          wtt = 1 / Math.log10(Math.abs(colorScore - oppScore) + 2);
         }
 
         wt += wtt;
