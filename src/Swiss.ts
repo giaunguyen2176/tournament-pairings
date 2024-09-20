@@ -277,11 +277,13 @@ export function Swiss(
         const oppGroupIndex = scoreGroups.findIndex((s) => s === opp.score);
         const scoreGroupDiff = Math.abs(currGroupIndex - oppGroupIndex);
         if (scoreGroupDiff < 2) {
-          wt += 1.5 / Math.log10(scoreGroupDiff + 2);
-          debugWt.push(["bye with low diff", wt]);
+          wtt = 1.5 / Math.log10(scoreGroupDiff + 2);
+          wt += wtt;
+          debugWt.push(["bye with low diff", wtt]);
         } else {
-          wt += 1 / Math.log10(scoreGroupDiff + 2);
-          debugWt.push(["bye with high diff", wt]);
+          wtt = 1 / Math.log10(scoreGroupDiff + 2);
+          wt += wtt;
+          debugWt.push(["bye with high diff", wtt]);
         }
       }
 
