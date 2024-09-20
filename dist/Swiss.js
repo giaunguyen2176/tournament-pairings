@@ -164,38 +164,39 @@ export function Swiss(players, round, rated = false, colors = false) {
                         swissIndex,
                     ]);
                 }
-            }
-            if (colors) {
-                const colorScore = curr.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
-                const oppScore = opp.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
-                if (curr.colors.length > 1 && curr.colors.slice(-2).join("") === "ww") {
-                    if (opp.colors.slice(-2).join("") === "ww") {
-                        continue;
+                if (colors) {
+                    const colorScore = curr.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
+                    const oppScore = opp.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
+                    if (curr.colors.length > 1 &&
+                        curr.colors.slice(-2).join("") === "ww") {
+                        if (opp.colors.slice(-2).join("") === "ww") {
+                            continue;
+                        }
+                        else if (opp.colors.slice(-2).join("") === "bb") {
+                            wtt = 7;
+                        }
+                        else {
+                            wtt = 2 / Math.log(4 - Math.abs(oppScore));
+                        }
                     }
-                    else if (opp.colors.slice(-2).join("") === "bb") {
-                        wtt = 7;
+                    else if (curr.colors.length > 1 &&
+                        curr.colors.slice(-2).join("") === "bb") {
+                        if (opp.colors.slice(-2).join("") === "bb") {
+                            continue;
+                        }
+                        else if (opp.colors.slice(-2).join("") === "ww") {
+                            wtt = 8;
+                        }
+                        else {
+                            wtt = 2 / Math.log(4 - Math.abs(oppScore));
+                        }
                     }
                     else {
-                        wtt = 2 / Math.log(4 - Math.abs(oppScore));
+                        wtt = 5 / (4 * Math.log10(10 - Math.abs(colorScore - oppScore)));
                     }
+                    wt += wtt / 4;
+                    debugWt.push(["colors", wtt / 4]);
                 }
-                else if (curr.colors.length > 1 &&
-                    curr.colors.slice(-2).join("") === "bb") {
-                    if (opp.colors.slice(-2).join("") === "bb") {
-                        continue;
-                    }
-                    else if (opp.colors.slice(-2).join("") === "ww") {
-                        wtt = 8;
-                    }
-                    else {
-                        wtt = 2 / Math.log(4 - Math.abs(oppScore));
-                    }
-                }
-                else {
-                    wtt = 5 / (4 * Math.log10(10 - Math.abs(colorScore - oppScore)));
-                }
-                wt += wtt / 4;
-                debugWt.push(["colors", wtt / 4]);
             }
             if (rated) {
                 wt +=
