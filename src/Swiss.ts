@@ -13,6 +13,7 @@ interface Player {
 
 function findFloaters(players: Player[]) {
   if (players.length === 0) {
+    console.debug("no float");
     return [];
   }
 

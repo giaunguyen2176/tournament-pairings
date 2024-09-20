@@ -2,6 +2,7 @@ import blossom from "edmonds-blossom-fixed";
 function findFloaters(players) {
     var _a, _b, _c, _d;
     if (players.length === 0) {
+        console.debug("no float");
         return [];
     }
     if (players.length === 1) {
