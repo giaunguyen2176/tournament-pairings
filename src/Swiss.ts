@@ -157,8 +157,11 @@ export function Swiss(
     floatersByScore[sg] = findFloaters(slicePlayers);
     console.debug("find floaters result: ", floatersByScore[sg]);
 
+    if (!prevSg) {
+      continue;
+    }
     const floaterIds = floatersByScore[sg].map((p1: Player) => p1.id);
-    slicePlayersByScore[sg] = slicePlayers.filter((p: Player) => {
+    slicePlayersByScore[prevSg] = slicePlayers.filter((p: Player) => {
       return !floaterIds.includes(p.id);
     });
   }

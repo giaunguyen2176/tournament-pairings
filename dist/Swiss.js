@@ -108,8 +108,11 @@ export function Swiss(players, round, rated = false, colors = false) {
         console.debug("find floaters", sg, slicePlayers);
         floatersByScore[sg] = findFloaters(slicePlayers);
         console.debug("find floaters result: ", floatersByScore[sg]);
+        if (!prevSg) {
+            continue;
+        }
         const floaterIds = floatersByScore[sg].map((p1) => p1.id);
-        slicePlayersByScore[sg] = slicePlayers.filter((p) => {
+        slicePlayersByScore[prevSg] = slicePlayers.filter((p) => {
             return !floaterIds.includes(p.id);
         });
     }
