@@ -182,7 +182,7 @@ export function Swiss(
         continue;
       }
 
-      const slicePlayers = isFloater ? slicePlayersByScore[opp.score] : [curr.score];
+      const slicePlayers = slicePlayersByScore[isFloater ? opp.score : curr.score];
       const halfway = Math.floor((slicePlayers.length + 1) / 2);
 
       let debugWt = [

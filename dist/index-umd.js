@@ -1268,7 +1268,7 @@
                 if (curr.hasOwnProperty("avoid") && curr.avoid.includes(opp.id)) {
                     continue;
                 }
-                const slicePlayers = isFloater ? slicePlayersByScore[opp.score] : [curr.score];
+                const slicePlayers = slicePlayersByScore[isFloater ? opp.score : curr.score];
                 const halfway = Math.floor((slicePlayers.length + 1) / 2);
                 let debugWt = [
                     [curr.id, opp.id, isFloater, slicePlayers]
