@@ -1272,13 +1272,16 @@
                 let debugWt = [
                     [curr.id, opp.id, isFloater, slicePlayers]
                 ];
+                const currIndex = slicePlayers.findIndex((p) => p.id === curr.id);
+                const oppIndex = slicePlayers.findIndex((p) => p.id === opp.id);
+                if (currIndex < 0 || oppIndex < 0) {
+                    continue;
+                }
                 // prioritize pair with higher total score
                 const scoreSumIndex = scoreSums.findIndex((s) => s === curr.score + opp.score);
                 let wtt = 0;
                 let wt = 14 * Math.log10(scoreSumIndex + 1);
                 debugWt.push(["score", wt]);
-                const currIndex = slicePlayers.findIndex((p) => p.id === curr.id);
-                const oppIndex = slicePlayers.findIndex((p) => p.id === opp.id);
                 if (currIndex > -1 && oppIndex > -1) {
                     const swissIndex = Math.abs(oppIndex - currIndex - halfway) + currIndex / 5;
                     if (currIndex < halfway && oppIndex >= halfway) {
