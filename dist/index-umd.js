@@ -1314,10 +1314,10 @@
                             continue;
                         }
                         else if (opp.colors.slice(-2).join("") === "bb") {
-                            wt += 7;
+                            wtt = 7;
                         }
                         else {
-                            wt += 2 / Math.log(4 - Math.abs(oppScore));
+                            wtt = 2 / Math.log(4 - Math.abs(oppScore));
                         }
                     }
                     else if (curr.colors.length > 1 &&
@@ -1326,16 +1326,17 @@
                             continue;
                         }
                         else if (opp.colors.slice(-2).join("") === "ww") {
-                            wt += 8;
+                            wtt = 8;
                         }
                         else {
-                            wt += 2 / Math.log(4 - Math.abs(oppScore));
+                            wtt = 2 / Math.log(4 - Math.abs(oppScore));
                         }
                     }
                     else {
-                        wt += 5 / (4 * Math.log10(10 - Math.abs(colorScore - oppScore)));
+                        wtt = 5 / (4 * Math.log10(10 - Math.abs(colorScore - oppScore)));
                     }
-                    debugWt.push(["colors", wt]);
+                    wt += wtt;
+                    debugWt.push(["colors", wtt]);
                 }
                 if (rated) {
                     wt +=
