@@ -188,14 +188,14 @@ export function Swiss(
         (s) => s === curr.score + opp.score
       );
       let wtt = 0;
-      let wt = 2 * scoreSumIndex;
+      let wt = 14 * Math.log10(scoreSumIndex + 1);
 
       debugWt.push(["score", wt]);
 
       const currIndex = slicePlayers.findIndex((p: Player) => p.id === curr.id);
       const oppIndex = slicePlayers.findIndex((p: Player) => p.id === opp.id);
 
-      if (currIndex > -1 && oppIndex < -1) {
+      if (currIndex > -1 && oppIndex > -1) {
         const swissIndex =
           Math.abs(oppIndex - currIndex - halfway) + currIndex / 5;
 
