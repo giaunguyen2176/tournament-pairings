@@ -1262,7 +1262,6 @@
             const curr = playerArray[i];
             const next = playerArray.slice(i + 1);
             const isFloater = floatersByScore[curr.score].map((p) => p.id).includes(curr.id);
-            console.debug(curr.id, "is floater", isFloater);
             for (let j = 0; j < next.length; j++) {
                 const opp = next[j];
                 if (curr.hasOwnProperty("avoid") && curr.avoid.includes(opp.id)) {
@@ -1345,20 +1344,19 @@
                             3;
                     debugWt.push(["rated", wt]);
                 }
-                // if (opp.hasOwnProperty("receivedBye") && opp.receivedBye) {
-                //   const currGroupIndex = scoreGroups.findIndex((s) => s === curr.score);
-                //   const oppGroupIndex = scoreGroups.findIndex((s) => s === opp.score);
-                //   const scoreGroupDiff = Math.abs(currGroupIndex - oppGroupIndex);
-                //   if (oppGroupIndex < 2) {
-                //     if (scoreGroupDiff < 2) {
-                //       wt += 3 / Math.log10(scoreGroupDiff + 2);
-                //       debugWt.push(["bye with low diff", wt]);
-                //     } else {
-                //       wt += 5 / Math.log10(scoreGroupDiff + 2);
-                //       debugWt.push(["bye with high diff", wt]);
-                //     }
-                //   }
-                // }
+                if (opp.hasOwnProperty("receivedBye") && opp.receivedBye) {
+                    const currGroupIndex = scoreGroups.findIndex((s) => s === curr.score);
+                    const oppGroupIndex = scoreGroups.findIndex((s) => s === opp.score);
+                    const scoreGroupDiff = Math.abs(currGroupIndex - oppGroupIndex);
+                    if (scoreGroupDiff < 2) {
+                        wt += 1.5 / Math.log10(scoreGroupDiff + 2);
+                        debugWt.push(["bye with low diff", wt]);
+                    }
+                    else {
+                        wt += 1 / Math.log10(scoreGroupDiff + 2);
+                        debugWt.push(["bye with high diff", wt]);
+                    }
+                }
                 pairs.push([curr.index, opp.index, wt]);
                 debugPairs.push([curr.index, opp.index, wt, debugWt]);
             }
