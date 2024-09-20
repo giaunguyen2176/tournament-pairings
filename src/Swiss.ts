@@ -157,11 +157,8 @@ export function Swiss(
     floatersByScore[sg] = findFloaters(slicePlayers);
     console.debug("find floaters result: ", floatersByScore[sg]);
 
-    if (!prevSg) {
-      continue;
-    }
     const floaterIds = floatersByScore[sg].map((p1: Player) => p1.id);
-    slicePlayersByScore[prevSg] = slicePlayers.filter((p: Player) => {
+    slicePlayersByScore[sg] = slicePlayers.filter((p: Player) => {
       return !floaterIds.includes(p.id);
     });
   }
@@ -175,14 +172,16 @@ export function Swiss(
   for (let i = 0; i < playerArray.length; i++) {
     const curr = playerArray[i];
     const next = playerArray.slice(i + 1);
-    const slicePlayers = slicePlayersByScore[curr.score] ?? [];
-    const halfway = Math.floor((slicePlayers.length + 1) / 2);
+    const isFloater = floatersByScore[curr.score].map((p: Player) => p.id).includes(curr.id);
 
     for (let j = 0; j < next.length; j++) {
       const opp = next[j];
       if (curr.hasOwnProperty("avoid") && curr.avoid.includes(opp.id)) {
         continue;
       }
+
+      const slicePlayers = isFloater ? slicePlayersByScore[opp.score] : [curr.score];
+      const halfway = Math.floor((slicePlayers.length + 1) / 2);
 
       let debugWt = [];
 

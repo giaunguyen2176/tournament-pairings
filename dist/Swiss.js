@@ -57,7 +57,6 @@ function findFloaters(players) {
     return floaters;
 }
 export function Swiss(players, round, rated = false, colors = false) {
-    var _a;
     const matches = [];
     let playerArray = [];
     if (Array.isArray(players)) {
@@ -109,11 +108,8 @@ export function Swiss(players, round, rated = false, colors = false) {
         console.debug("find floaters", sg, slicePlayers);
         floatersByScore[sg] = findFloaters(slicePlayers);
         console.debug("find floaters result: ", floatersByScore[sg]);
-        if (!prevSg) {
-            continue;
-        }
         const floaterIds = floatersByScore[sg].map((p1) => p1.id);
-        slicePlayersByScore[prevSg] = slicePlayers.filter((p) => {
+        slicePlayersByScore[sg] = slicePlayers.filter((p) => {
             return !floaterIds.includes(p.id);
         });
     }
@@ -124,13 +120,14 @@ export function Swiss(players, round, rated = false, colors = false) {
     for (let i = 0; i < playerArray.length; i++) {
         const curr = playerArray[i];
         const next = playerArray.slice(i + 1);
-        const slicePlayers = (_a = slicePlayersByScore[curr.score]) !== null && _a !== void 0 ? _a : [];
-        const halfway = Math.floor((slicePlayers.length + 1) / 2);
+        const isFloater = floatersByScore[curr.score].map((p) => p.id).includes(curr.id);
         for (let j = 0; j < next.length; j++) {
             const opp = next[j];
             if (curr.hasOwnProperty("avoid") && curr.avoid.includes(opp.id)) {
                 continue;
             }
+            const slicePlayers = isFloater ? slicePlayersByScore[opp.score] : [curr.score];
+            const halfway = Math.floor((slicePlayers.length + 1) / 2);
             let debugWt = [];
             // prioritize pair with higher total score
             const scoreSumIndex = scoreSums.findIndex((s) => s === curr.score + opp.score);
