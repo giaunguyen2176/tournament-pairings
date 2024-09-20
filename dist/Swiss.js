@@ -6,7 +6,7 @@ function findFloaters(players) {
         const others = players.filter((p) => p.id !== player.id);
         const pairable = others.find((p) => !p.avoid.includes(player.id));
         if (!pairable) {
-            floaters.push(player);
+            floaters.push([player, pairable]);
             continue;
         }
         const currScore = player.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
@@ -15,25 +15,29 @@ function findFloaters(players) {
             return Math.abs(currScore + oppScore) !== 4;
         });
         if (!pairableByColorScore) {
-            floaters.push(player);
+            floaters.push([player, pairableByColorScore]);
             continue;
         }
         const currColors = player.colors.slice(-2).join("");
-        const pairableByColor = others.find((p) => {
-            const oppColors = p.colors.slice(-2).join("");
-            return (currColors === 'ww' && oppColors !== 'ww') || (currColors === 'bb' && oppColors !== 'bb');
-        });
-        if (!pairableByColor) {
-            floaters.push(player);
-            continue;
+        if (currColors === 'ww' || currColors === 'bb') {
+            const pairableByColor = others.find((p) => {
+                const oppColors = p.colors.slice(-2).join("");
+                return ((currColors === "ww" && oppColors !== "ww") ||
+                    (currColors === "bb" && oppColors !== "bb"));
+            });
+            if (!pairableByColor) {
+                floaters.push([player, pairableByColor]);
+                continue;
+            }
         }
     }
-    if (players.length % 2 === 0) {
+    const remain = players.filter((p) => !floaters.map((p1) => p1.id).includes(p.id));
+    if (remain.length % 2 === 0) {
         return floaters;
     }
-    const middle = players[Math.floor(players.length / 2)];
+    const middle = remain[Math.floor(remain.length / 2)];
     if (middle) {
-        floaters.push(middle);
+        floaters.push([middle, remain]);
     }
     return floaters;
 }
