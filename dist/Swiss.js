@@ -5,6 +5,7 @@ function findFloaters(players) {
         return [];
     }
     if (players.length === 1) {
+        console.debug('float: 1 player');
         return players;
     }
     const floaters = [];
@@ -13,7 +14,8 @@ function findFloaters(players) {
         const others = players.filter((p) => p.id !== player.id);
         const pairable = others.find((p) => { var _a; return !((_a = p.avoid) === null || _a === void 0 ? void 0 : _a.includes(player.id)); });
         if (!pairable) {
-            floaters.push([player, pairable]);
+            console.debug("float: no pairable", player.id);
+            floaters.push(player);
             continue;
         }
         const currScore = (_b = (_a = player.colors) === null || _a === void 0 ? void 0 : _a.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0)) !== null && _b !== void 0 ? _b : 0;
@@ -23,7 +25,8 @@ function findFloaters(players) {
             return Math.abs(currScore + oppScore) !== 4;
         });
         if (!pairableByColorScore) {
-            floaters.push([player, pairableByColorScore]);
+            console.debug("float: color score", player.id);
+            floaters.push(player);
             continue;
         }
         const currColors = (_d = (_c = player.colors) === null || _c === void 0 ? void 0 : _c.slice(-2).join("")) !== null && _d !== void 0 ? _d : '';
@@ -35,7 +38,8 @@ function findFloaters(players) {
                     (currColors === "bb" && oppColors !== "bb"));
             });
             if (!pairableByColor) {
-                floaters.push([player, pairableByColor]);
+                console.debug("float: color sequence", player.id);
+                floaters.push(player);
                 continue;
             }
         }
@@ -46,6 +50,7 @@ function findFloaters(players) {
     }
     const middle = remain[Math.floor(remain.length / 2)];
     if (middle) {
+        console.debug("float: odd", middle.id);
         floaters.push([middle, remain]);
     }
     return floaters;
@@ -99,8 +104,8 @@ export function Swiss(players, round, rated = false, colors = false) {
         const floatersFromPreviousGroup = prevSg ? floatersByScore[prevSg] : [];
         const currentGroupPlayers = scoreGroupPlayers[sg];
         const slicePlayers = [...floatersFromPreviousGroup, ...currentGroupPlayers];
-        console.debug('find floaters', sg, slicePlayers);
         floatersByScore[sg] = findFloaters(slicePlayers);
+        console.debug("find floaters", sg, slicePlayers, floatersByScore[sg]);
         const floaterIds = floatersByScore[sg].map((p1) => p1.id);
         slicePlayersByScore[sg] = slicePlayers.filter((p) => {
             return !floaterIds.includes(p.id);
@@ -115,7 +120,6 @@ export function Swiss(players, round, rated = false, colors = false) {
         const next = playerArray.slice(i + 1);
         const slicePlayers = slicePlayersByScore[curr.score];
         const halfway = Math.floor((slicePlayers.length + 1) / 2);
-        console.debug("slicePlayers", curr.score, halfway, slicePlayers);
         for (let j = 0; j < next.length; j++) {
             const opp = next[j];
             if (curr.hasOwnProperty("avoid") && curr.avoid.includes(opp.id)) {

@@ -17,6 +17,7 @@ function findFloaters(players: Player[]) {
   }
 
   if (players.length === 1) {
+    console.debug('float: 1 player');
     return players;
   }
 
@@ -28,7 +29,8 @@ function findFloaters(players: Player[]) {
     const pairable = others.find((p) => !p.avoid?.includes(player.id));
     
     if (!pairable) {
-      floaters.push([player, pairable]);
+      console.debug("float: no pairable", player.id);
+      floaters.push(player);
       continue;
     }
 
@@ -47,7 +49,8 @@ function findFloaters(players: Player[]) {
     });
 
     if (!pairableByColorScore) {
-      floaters.push([player, pairableByColorScore]);
+      console.debug("float: color score", player.id);
+      floaters.push(player);
       continue;
     }
 
@@ -63,7 +66,8 @@ function findFloaters(players: Player[]) {
       });
 
       if (!pairableByColor) {
-        floaters.push([player, pairableByColor]);
+        console.debug("float: color sequence", player.id);
+        floaters.push(player);
         continue;
       }
     }
@@ -79,6 +83,7 @@ function findFloaters(players: Player[]) {
   const middle = remain[Math.floor(remain.length / 2)];
   
   if (middle) {
+    console.debug("float: odd", middle.id);
     floaters.push([middle, remain]);
   }
 
@@ -146,8 +151,9 @@ export function Swiss(
     const floatersFromPreviousGroup = prevSg ? floatersByScore[prevSg] : [];
     const currentGroupPlayers = scoreGroupPlayers[sg];
     const slicePlayers = [...floatersFromPreviousGroup, ...currentGroupPlayers];
-    console.debug('find floaters', sg, slicePlayers)
     floatersByScore[sg] = findFloaters(slicePlayers);
+
+    console.debug("find floaters", sg, slicePlayers, floatersByScore[sg]);
 
     const floaterIds = floatersByScore[sg].map((p1: Player) => p1.id);
     slicePlayersByScore[sg] = slicePlayers.filter((p: Player) => {
@@ -166,8 +172,6 @@ export function Swiss(
     const next = playerArray.slice(i + 1);
     const slicePlayers = slicePlayersByScore[curr.score];
     const halfway = Math.floor((slicePlayers.length + 1) / 2);
-
-    console.debug("slicePlayers", curr.score, halfway, slicePlayers);
 
     for (let j = 0; j < next.length; j++) {
       const opp = next[j];
