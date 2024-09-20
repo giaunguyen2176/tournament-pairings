@@ -121,6 +121,7 @@ export function Swiss(players, round, rated = false, colors = false) {
         const curr = playerArray[i];
         const next = playerArray.slice(i + 1);
         const isFloater = floatersByScore[curr.score].map((p) => p.id).includes(curr.id);
+        console.debug(curr.id, "is floater", isFloater);
         for (let j = 0; j < next.length; j++) {
             const opp = next[j];
             if (curr.hasOwnProperty("avoid") && curr.avoid.includes(opp.id)) {
@@ -128,7 +129,9 @@ export function Swiss(players, round, rated = false, colors = false) {
             }
             const slicePlayers = isFloater ? slicePlayersByScore[opp.score] : [curr.score];
             const halfway = Math.floor((slicePlayers.length + 1) / 2);
-            let debugWt = [];
+            let debugWt = [
+                [curr.id, opp.id, isFloater, slicePlayers]
+            ];
             // prioritize pair with higher total score
             const scoreSumIndex = scoreSums.findIndex((s) => s === curr.score + opp.score);
             let wtt = 0;
