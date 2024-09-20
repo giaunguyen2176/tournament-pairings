@@ -1368,7 +1368,8 @@
         }
         const blossomPairs = blossom$1(pairs, true);
         console.log("pairings input players", playerArray);
-        console.log("debug pairings pairs", debugPairs.sort((a, b) => b[2] - a[2]));
+        console.log("debug pairings pairs", debugPairs);
+        console.log("debug pairings pairs sorted", debugPairs.sort((a, b) => b[2] - a[2]));
         console.log("pairings pairs", pairs);
         console.log("blossomPairs", blossomPairs);
         let playerCopy = [...playerArray];
