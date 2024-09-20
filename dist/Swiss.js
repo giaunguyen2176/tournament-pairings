@@ -57,6 +57,7 @@ function findFloaters(players) {
     return floaters;
 }
 export function Swiss(players, round, rated = false, colors = false) {
+    var _a;
     const matches = [];
     let playerArray = [];
     if (Array.isArray(players)) {
@@ -123,7 +124,7 @@ export function Swiss(players, round, rated = false, colors = false) {
     for (let i = 0; i < playerArray.length; i++) {
         const curr = playerArray[i];
         const next = playerArray.slice(i + 1);
-        const slicePlayers = slicePlayersByScore[curr.score];
+        const slicePlayers = (_a = slicePlayersByScore[curr.score]) !== null && _a !== void 0 ? _a : [];
         const halfway = Math.floor((slicePlayers.length + 1) / 2);
         for (let j = 0; j < next.length; j++) {
             const opp = next[j];

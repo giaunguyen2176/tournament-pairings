@@ -175,7 +175,7 @@ export function Swiss(
   for (let i = 0; i < playerArray.length; i++) {
     const curr = playerArray[i];
     const next = playerArray.slice(i + 1);
-    const slicePlayers = slicePlayersByScore[curr.score];
+    const slicePlayers = slicePlayersByScore[curr.score] ?? [];
     const halfway = Math.floor((slicePlayers.length + 1) / 2);
 
     for (let j = 0; j < next.length; j++) {
