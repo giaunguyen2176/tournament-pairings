@@ -12,11 +12,20 @@ interface Player {
 }
 
 function findFloaters(players: Player[]) {
+  if (players.length === 0) {
+    return [];
+  }
+
+  if (players.length === 1) {
+    return players;
+  }
+
   const floaters = [];
+
   for (let i = 0; i < players.length; i++) {
     const player = players[i];
     const others = players.filter((p: Player) => p.id !== player.id);
-    const pairable = others.find((p) => !(p.avoid?.includes(player.id) ?? false));
+    const pairable = others.find((p) => !p.avoid?.includes(player.id));
     
     if (!pairable) {
       floaters.push([player, pairable]);
