@@ -1349,20 +1349,21 @@
                             3;
                     debugWt.push(["rated", wt]);
                 }
-                // if (opp.hasOwnProperty("receivedBye") && opp.receivedBye) {
-                //   const currGroupIndex = scoreGroups.findIndex((s) => s === curr.score);
-                //   const oppGroupIndex = scoreGroups.findIndex((s) => s === opp.score);
-                //   const scoreGroupDiff = Math.abs(currGroupIndex - oppGroupIndex);
-                //   if (scoreGroupDiff < 2) {
-                //     wtt = 1.5 / Math.log10(scoreGroupDiff + 2);
-                //     wt += wtt;
-                //     debugWt.push(["bye with low diff", wtt]);
-                //   } else {
-                //     wtt = 1 / Math.log10(scoreGroupDiff + 2);
-                //     wt += wtt;
-                //     debugWt.push(["bye with high diff", wtt]);
-                //   }
-                // }
+                if (opp.hasOwnProperty("receivedBye") && opp.receivedBye) {
+                    const currGroupIndex = scoreGroups.findIndex((s) => s === curr.score);
+                    const oppGroupIndex = scoreGroups.findIndex((s) => s === opp.score);
+                    const scoreGroupDiff = Math.abs(currGroupIndex - oppGroupIndex);
+                    if (scoreGroupDiff < 2) {
+                        wtt = 1.5 / Math.log10(scoreGroupDiff + 2);
+                        wt += wtt;
+                        debugWt.push(["bye with low diff", wtt]);
+                    }
+                    else {
+                        wtt = 1 / Math.log10(scoreGroupDiff + 2);
+                        wt += wtt;
+                        debugWt.push(["bye with high diff", wtt]);
+                    }
+                }
                 pairs.push([curr.index, opp.index, wt]);
                 debugPairs.push([curr.index, opp.index, wt, debugWt]);
             }
