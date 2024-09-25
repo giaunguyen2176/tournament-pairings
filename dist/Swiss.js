@@ -159,7 +159,7 @@ export function Swiss(players, round, rated = false, colors = false) {
             if (currIndex > -1 && oppIndex > -1) {
                 const swissIndex = Math.abs(oppIndex - currIndex - halfway) + currIndex / 5;
                 if (currIndex < halfway && oppIndex >= halfway) {
-                    wtt = 1.3 / Math.log10(swissIndex + 2);
+                    wtt = 2 / Math.log10(swissIndex + 2);
                     wt += wtt;
                     debugWt.push([
                         "swiss halfway",
@@ -194,7 +194,7 @@ export function Swiss(players, round, rated = false, colors = false) {
                             wtt = 7;
                         }
                         else {
-                            wtt = 2 / Math.log(4 - Math.abs(oppScore));
+                            wtt = 2 / Math.log10(Math.abs(oppScore) + 2);
                         }
                     }
                     else if (curr.colors.length > 1 &&
@@ -206,14 +206,14 @@ export function Swiss(players, round, rated = false, colors = false) {
                             wtt = 8;
                         }
                         else {
-                            wtt = 2 / Math.log(4 - Math.abs(oppScore));
+                            wtt = 2 / Math.log10(Math.abs(oppScore) + 2);
                         }
                     }
                     else {
-                        wtt = 5 / (4 * Math.log10(10 - Math.abs(colorScore - oppScore)));
+                        wtt = 1.25 / Math.log10(Math.abs(colorScore - oppScore) + 2);
                     }
-                    wt += wtt / 4;
-                    debugWt.push(["colors", wtt / 4]);
+                    wt += wtt;
+                    debugWt.push(["colors", wtt]);
                 }
             }
             if (rated) {
