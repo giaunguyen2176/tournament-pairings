@@ -254,7 +254,7 @@ export function Swiss(
         }
 
         if (colors) {
-          const colorScore = cur.colors.reduce(
+          const curScore = cur.colors.reduce(
             (sum, color) => (color === "w" ? sum + 1 : sum - 1),
             0
           );
@@ -297,7 +297,7 @@ export function Swiss(
                 wtt = 8;
                 debugWt.push(["colors", "555", wtt]);
               } else {
-                wtt = 2 / Math.log10(Math.abs(oppScore) + 2);
+                wtt = 2 / Math.log10(Math.abs(curScore) + 2);
                 debugWt.push(["colors", "666", wtt]);
               }
             } else if (
@@ -310,11 +310,11 @@ export function Swiss(
                 wtt = 7;
                 debugWt.push(["colors", "777", wtt]);
               } else {
-                wtt = 2 / Math.log10(Math.abs(oppScore) + 2);
+                wtt = 2 / Math.log10(Math.abs(curScore) + 2);
                 debugWt.push(["colors", "888", wtt]);
               }
             } else {
-              wtt = 1.25 / Math.log10(Math.abs(colorScore - oppScore) + 2);
+              wtt = 1.25 / Math.log10(Math.abs(curScore - oppScore) + 2);
               debugWt.push(["colors", "999", wtt]);
             }
           }

@@ -183,7 +183,7 @@ export function Swiss(players, round, rated = false, colors = false) {
                     ]);
                 }
                 if (colors) {
-                    const colorScore = cur.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
+                    const curScore = cur.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
                     const oppScore = opp.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
                     if (cur.colors.length > 1 && cur.colors.slice(-2).join("") === "ww") {
                         if (opp.colors.slice(-2).join("") === "ww") {
@@ -223,7 +223,7 @@ export function Swiss(players, round, rated = false, colors = false) {
                                 debugWt.push(["colors", "555", wtt]);
                             }
                             else {
-                                wtt = 2 / Math.log10(Math.abs(oppScore) + 2);
+                                wtt = 2 / Math.log10(Math.abs(curScore) + 2);
                                 debugWt.push(["colors", "666", wtt]);
                             }
                         }
@@ -237,12 +237,12 @@ export function Swiss(players, round, rated = false, colors = false) {
                                 debugWt.push(["colors", "777", wtt]);
                             }
                             else {
-                                wtt = 2 / Math.log10(Math.abs(oppScore) + 2);
+                                wtt = 2 / Math.log10(Math.abs(curScore) + 2);
                                 debugWt.push(["colors", "888", wtt]);
                             }
                         }
                         else {
-                            wtt = 1.25 / Math.log10(Math.abs(colorScore - oppScore) + 2);
+                            wtt = 1.25 / Math.log10(Math.abs(curScore - oppScore) + 2);
                             debugWt.push(["colors", "999", wtt]);
                         }
                     }
