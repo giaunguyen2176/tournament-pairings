@@ -12,55 +12,104 @@ interface Player {
 }
 
 function findFloaters(players: Player[]) {
+  if (players.length === 0) {
+    console.debug("no float");
+    return [];
+  }
+
+  if (players.length === 1) {
+    console.debug("float: 1 player");
+    return players;
+  }
+
   const floaters = [];
+
   for (let i = 0; i < players.length; i++) {
     const player = players[i];
     const others = players.filter((p: Player) => p.id !== player.id);
-    const pairable = others.find((p) => !p.avoid.includes(player.id));
-    
+    const pairable = others.find((p) => !p.avoid?.includes(player.id));
+
     if (!pairable) {
+      console.debug("float: no pairable", player.id);
       floaters.push(player);
       continue;
     }
 
-    const currScore = player.colors.reduce(
-      (sum, color) => (color === "w" ? sum + 1 : sum - 1),
-      0
-    );
-    const pairableByColorScore = others.find((p) => {
-      const oppScore = p.colors.reduce(
+    const currScore =
+      player.colors?.reduce(
         (sum, color) => (color === "w" ? sum + 1 : sum - 1),
         0
-      );
+      ) ?? 0;
+
+    const pairableByColorScore = others.find((p) => {
+      const oppScore =
+        p.colors?.reduce(
+          (sum, color) => (color === "w" ? sum + 1 : sum - 1),
+          0
+        ) ?? 0;
 
       return Math.abs(currScore + oppScore) !== 4;
     });
 
     if (!pairableByColorScore) {
+      console.debug("float: color score", player.id);
       floaters.push(player);
       continue;
     }
 
-    const currColors = player.colors.slice(-2).join("");
-    const pairableByColor = others.find((p) => {
-      const oppColors = p.colors.slice(-2).join("");
-      return (currColors === 'ww' && oppColors !== 'ww') || (currColors === 'bb' && oppColors !== 'bb');
-    });
+    const currColors = player.colors?.slice(-2).join("") ?? "";
 
-    if (!pairableByColor) {
-      floaters.push(player);
-      continue;
+    if (currColors === "ww" || currColors === "bb") {
+      const pairableByColor = others.find((p) => {
+        const oppColors = p.colors?.slice(-2).join("") ?? "";
+        return (
+          (currColors === "ww" && oppColors !== "ww") ||
+          (currColors === "bb" && oppColors !== "bb")
+        );
+      });
+
+      if (!pairableByColor) {
+        console.debug("float: color sequence", player.id);
+        floaters.push(player);
+        continue;
+      }
     }
   }
 
-  if (players.length % 2 === 0) {
+  const stayers = players.filter(
+    (p) => !floaters.map((p1) => p1.id).includes(p.id)
+  );
+
+  if (stayers.length % 2 === 0) {
     return floaters;
   }
 
-  const middle = players[Math.floor(players.length / 2)];
-  
-  if (middle) {
-    floaters.push(middle);
+  // try finding the possible floater from top half
+  let i = Math.floor(stayers.length / 2);
+  while (i >= 0) {
+    // pick the center player
+    const trialFloater = stayers[i];
+
+    if (trialFloater) {
+      // recheck floater of stayers after excludes trial floater
+      const children = stayers.filter((p) => p.id !== trialFloater.id);
+      const childFloaters = findFloaters(children);
+
+      if (childFloaters && childFloaters.length) {
+        // stayers cannot be paired, choose a different floater
+        i--;
+        continue;
+      }
+
+      floaters.push(trialFloater);
+      break;
+    }
+  }
+
+  // TODO: maybe also try finding on the lower half
+
+  if (i < 0 || i >= stayers.length) {
+    console.debug("slice is odd, but cannot find a possible floater");
   }
 
   return floaters;
@@ -126,13 +175,14 @@ export function Swiss(
     const prevSg = reversedScoreGroups[k - 1];
     const floatersFromPreviousGroup = prevSg ? floatersByScore[prevSg] : [];
     const currentGroupPlayers = scoreGroupPlayers[sg];
-    floatersByScore[sg] = findFloaters([
-      ...floatersFromPreviousGroup,
-      ...currentGroupPlayers,
-    ]);
+    const slicePlayers = [...floatersFromPreviousGroup, ...currentGroupPlayers];
+
+    console.debug("find floaters", sg, slicePlayers);
+    floatersByScore[sg] = findFloaters(slicePlayers);
+    console.debug("find floaters result: ", floatersByScore[sg]);
 
     const floaterIds = floatersByScore[sg].map((p1: Player) => p1.id);
-    slicePlayersByScore[sg] = scoreGroupPlayers[sg].filter((p: Player) => {
+    slicePlayersByScore[sg] = slicePlayers.filter((p: Player) => {
       return !floaterIds.includes(p.id);
     });
   }
@@ -144,36 +194,40 @@ export function Swiss(
   let debugPairs = [];
 
   for (let i = 0; i < playerArray.length; i++) {
-    const curr = playerArray[i];
+    const cur = playerArray[i];
     const next = playerArray.slice(i + 1);
-    const slicePlayers = slicePlayersByScore[curr.score];
-    const halfway = Math.floor((slicePlayers.length + 1) / 2);
-
-    console.debug("slicePlayers", curr.score, halfway, slicePlayers);
+    const isFloater = floatersByScore[cur.score]
+      .map((p: Player) => p.id)
+      .includes(cur.id);
 
     for (let j = 0; j < next.length; j++) {
       const opp = next[j];
-      if (curr.hasOwnProperty("avoid") && curr.avoid.includes(opp.id)) {
+      if (cur.hasOwnProperty("avoid") && cur.avoid.includes(opp.id)) {
         continue;
       }
 
-      let debugWt = [];
+      const slicePlayers =
+        slicePlayersByScore[isFloater ? opp.score : cur.score];
+      const halfway = Math.floor((slicePlayers.length + 1) / 2);
+
+      let debugWt = [[cur.id, opp.id, isFloater, slicePlayers]];
+
+      const currIndex = slicePlayers.findIndex((p: Player) => p.id === cur.id);
+      const oppIndex = slicePlayers.findIndex((p: Player) => p.id === opp.id);
+
+      let wt = 0;
+      let wtt = 0;
 
       // prioritize pair with higher total score
       const scoreSumIndex = scoreSums.findIndex(
-        (s) => s === curr.score + opp.score
+        (s) => s === cur.score + opp.score
       );
-      let wtt = 0;
-      let wt = 2 * scoreSumIndex;
+      wt = 14 * Math.log10(scoreSumIndex + 1);
 
       debugWt.push(["score", wt]);
 
-      const currIndex = slicePlayers.findIndex((p: Player) => p.id === curr.id);
-      const oppIndex = slicePlayers.findIndex((p: Player) => p.id === opp.id);
-
-      if (currIndex > -1 && oppIndex < -1) {
-        const swissIndex =
-          Math.abs(oppIndex - currIndex - halfway) + currIndex / 5;
+      if (currIndex > -1 && oppIndex > -1) {
+        const swissIndex = Math.abs(oppIndex - currIndex - halfway);
 
         if (currIndex < halfway && oppIndex >= halfway) {
           wtt = 1.3 / Math.log10(swissIndex + 2);
@@ -198,42 +252,75 @@ export function Swiss(
             swissIndex,
           ]);
         }
-      }
 
-      if (colors) {
-        const colorScore = curr.colors.reduce(
-          (sum, color) => (color === "w" ? sum + 1 : sum - 1),
-          0
-        );
-        const oppScore = opp.colors.reduce(
-          (sum, color) => (color === "w" ? sum + 1 : sum - 1),
-          0
-        );
+        if (colors) {
+          const curScore = cur.colors.reduce(
+            (sum, color) => (color === "w" ? sum + 1 : sum - 1),
+            0
+          );
+          const oppScore = opp.colors.reduce(
+            (sum, color) => (color === "w" ? sum + 1 : sum - 1),
+            0
+          );
 
-        if (curr.colors.length > 1 && curr.colors.slice(-2).join("") === "ww") {
-          if (opp.colors.slice(-2).join("") === "ww") {
-            continue;
-          } else if (opp.colors.slice(-2).join("") === "bb") {
-            wt += 7;
+          if (cur.colors.length > 1 && cur.colors.slice(-2).join("") === "ww") {
+            if (opp.colors.slice(-2).join("") === "ww") {
+              continue;
+            } else if (opp.colors.slice(-2).join("") === "bb") {
+              wtt = 7;
+              debugWt.push(["colors", "111", wtt]);
+            } else {
+              wtt = 2 / Math.log10(Math.abs(oppScore) + 2);
+              debugWt.push(["colors", "222", wtt]);
+            }
+          } else if (
+            cur.colors.length > 1 &&
+            cur.colors.slice(-2).join("") === "bb"
+          ) {
+            if (opp.colors.slice(-2).join("") === "bb") {
+              continue;
+            } else if (opp.colors.slice(-2).join("") === "ww") {
+              wtt = 8;
+              debugWt.push(["colors", "333", wtt]);
+            } else {
+              wtt = 2 / Math.log10(Math.abs(oppScore) + 2);
+              debugWt.push(["colors", "444", wtt]);
+            }
           } else {
-            wt += 2 / Math.log(4 - Math.abs(oppScore));
+            if (
+              opp.colors.length > 1 &&
+              opp.colors.slice(-2).join("") === "ww"
+            ) {
+              if (cur.colors.slice(-2).join("") === "ww") {
+                continue;
+              } else if (cur.colors.slice(-2).join("") === "bb") {
+                wtt = 8;
+                debugWt.push(["colors", "555", wtt]);
+              } else {
+                wtt = 2 / Math.log10(Math.abs(curScore) + 2);
+                debugWt.push(["colors", "666", wtt]);
+              }
+            } else if (
+              opp.colors.length > 1 &&
+              opp.colors.slice(-2).join("") === "bb"
+            ) {
+              if (cur.colors.slice(-2).join("") === "bb") {
+                continue;
+              } else if (cur.colors.slice(-2).join("") === "ww") {
+                wtt = 7;
+                debugWt.push(["colors", "777", wtt]);
+              } else {
+                wtt = 2 / Math.log10(Math.abs(curScore) + 2);
+                debugWt.push(["colors", "888", wtt]);
+              }
+            } else {
+              wtt = 1.25 / Math.log10(Math.abs(curScore - oppScore) + 2);
+              debugWt.push(["colors", "999", wtt]);
+            }
           }
-        } else if (
-          curr.colors.length > 1 &&
-          curr.colors.slice(-2).join("") === "bb"
-        ) {
-          if (opp.colors.slice(-2).join("") === "bb") {
-            continue;
-          } else if (opp.colors.slice(-2).join("") === "ww") {
-            wt += 8;
-          } else {
-            wt += 2 / Math.log(4 - Math.abs(oppScore));
-          }
-        } else {
-          wt += 5 / (4 * Math.log10(10 - Math.abs(colorScore - oppScore)));
+
+          wt += wtt;
         }
-
-        debugWt.push(["colors", wt]);
       }
 
       if (rated) {
@@ -244,23 +331,23 @@ export function Swiss(
         debugWt.push(["rated", wt]);
       }
 
-      // if (opp.hasOwnProperty("receivedBye") && opp.receivedBye) {
-      //   const currGroupIndex = scoreGroups.findIndex((s) => s === curr.score);
-      //   const oppGroupIndex = scoreGroups.findIndex((s) => s === opp.score);
-      //   const scoreGroupDiff = Math.abs(currGroupIndex - oppGroupIndex);
-      //   if (oppGroupIndex < 2) {
-      //     if (scoreGroupDiff < 2) {
-      //       wt += 3 / Math.log10(scoreGroupDiff + 2);
-      //       debugWt.push(["bye with low diff", wt]);
-      //     } else {
-      //       wt += 5 / Math.log10(scoreGroupDiff + 2);
-      //       debugWt.push(["bye with high diff", wt]);
-      //     }
-      //   }
-      // }
+      if (opp.hasOwnProperty("receivedBye") && opp.receivedBye) {
+        const curGroupIndex = scoreGroups.findIndex((s) => s === cur.score);
+        const oppGroupIndex = scoreGroups.findIndex((s) => s === opp.score);
+        const scoreGroupDiff = Math.abs(curGroupIndex - oppGroupIndex);
+        if (scoreGroupDiff < 2) {
+          wtt = 1.5 / Math.log10(scoreGroupDiff + 2);
+          wt += wtt;
+          debugWt.push(["bye with low diff", wtt]);
+        } else {
+          wtt = 1 / Math.log10(scoreGroupDiff + 2);
+          wt += wtt;
+          debugWt.push(["bye with high diff", wtt]);
+        }
+      }
 
-      pairs.push([curr.index, opp.index, wt]);
-      debugPairs.push([curr.index, opp.index, wt, debugWt]);
+      pairs.push([cur.index, opp.index, wt]);
+      debugPairs.push([cur.index, opp.index, wt, debugWt]);
     }
   }
 
@@ -271,8 +358,9 @@ export function Swiss(
   const blossomPairs = blossom(pairs, true);
 
   console.log("pairings input players", playerArray);
+  console.log("debug pairings pairs", [...debugPairs]);
   console.log(
-    "debug pairings pairs",
+    "debug pairings pairs sorted",
     debugPairs.sort((a, b) => b[2] - a[2])
   );
   console.log("pairings pairs", pairs);
