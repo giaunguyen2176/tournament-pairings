@@ -74,18 +74,40 @@ function findFloaters(players: Player[]) {
     }
   }
 
-  const remain = players.filter(
+  const stayers = players.filter(
     (p) => !floaters.map((p1) => p1.id).includes(p.id)
   );
-  if (remain.length % 2 === 0) {
+
+  if (stayers.length % 2 === 0) {
     return floaters;
   }
 
-  const middle = remain[Math.floor(remain.length / 2)];
-  
-  if (middle) {
-    console.debug("float: odd", middle.id);
-    floaters.push(middle);
+  // try finding the possible floater from top half
+  let i = Math.floor(stayers.length / 2);
+  while (i >= 0) {
+    // pick the center player
+    const trialFloater = stayers[i];
+
+    if (trialFloater) {
+      // recheck floater of stayers after excludes trial floater
+      const children = stayers.filter((p) => p.id !== trialFloater.id);
+      const childFloaters = findFloaters(children);
+
+      if (childFloaters && childFloaters.length) {
+        // stayers cannot be paired, choose a different floater
+        i--;
+        continue;
+      }
+
+      floaters.push(trialFloater);
+      break;
+    }
+  }
+
+  // TODO: maybe also try finding on the lower half
+
+  if (i < 0 || i >= stayers.length) {
+    console.debug('slice is odd, but cannot find a possible floater');
   }
 
   return floaters;
