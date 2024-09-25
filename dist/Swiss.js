@@ -157,9 +157,9 @@ export function Swiss(players, round, rated = false, colors = false) {
             wt = 14 * Math.log10(scoreSumIndex + 1);
             debugWt.push(["score", wt]);
             if (currIndex > -1 && oppIndex > -1) {
-                const swissIndex = Math.abs(oppIndex - currIndex - halfway) + currIndex / 5;
+                const swissIndex = Math.abs(oppIndex - currIndex - halfway);
                 if (currIndex < halfway && oppIndex >= halfway) {
-                    wtt = 2 / Math.log10(swissIndex + 2);
+                    wtt = 1.3 / Math.log10(swissIndex + 2);
                     wt += wtt;
                     debugWt.push([
                         "swiss halfway",
