@@ -192,9 +192,11 @@ export function Swiss(players, round, rated = false, colors = false) {
                         }
                         else if (opp.colors.slice(-2).join("") === "bb") {
                             wtt = 7;
+                            debugWt.push(["colors", "111", wtt]);
                         }
                         else {
                             wtt = 2 / Math.log10(Math.abs(oppScore) + 2);
+                            debugWt.push(["colors", "222", wtt]);
                         }
                     }
                     else if (curr.colors.length > 1 &&
@@ -204,16 +206,18 @@ export function Swiss(players, round, rated = false, colors = false) {
                         }
                         else if (opp.colors.slice(-2).join("") === "ww") {
                             wtt = 8;
+                            debugWt.push(["colors", "333", wtt]);
                         }
                         else {
                             wtt = 2 / Math.log10(Math.abs(oppScore) + 2);
+                            debugWt.push(["colors", "444", wtt]);
                         }
                     }
                     else {
                         wtt = 1.25 / Math.log10(Math.abs(colorScore - oppScore) + 2);
+                        debugWt.push(["colors", "555", wtt]);
                     }
                     wt += wtt;
-                    debugWt.push(["colors", wtt]);
                 }
             }
             if (rated) {
