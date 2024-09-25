@@ -215,13 +215,13 @@ export function Swiss(
       let wt = 0;
       let wtt = 0;
       
-      // // prioritize pair with higher total score
-      // const scoreSumIndex = scoreSums.findIndex(
-      //   (s) => s === curr.score + opp.score
-      // );
-      // wt = 14 * Math.log10(scoreSumIndex + 1);
+      // prioritize pair with higher total score
+      const scoreSumIndex = scoreSums.findIndex(
+        (s) => s === curr.score + opp.score
+      );
+      wt = 14 * Math.log10(scoreSumIndex + 1);
 
-      // debugWt.push(["score", wt]);
+      debugWt.push(["score", wt]);
 
       if (currIndex > -1 && oppIndex > -1) {
         const swissIndex =
