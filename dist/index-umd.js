@@ -1147,7 +1147,7 @@
             return [];
         }
         if (players.length === 1) {
-            console.debug('float: 1 player');
+            console.debug("float: 1 player");
             return players;
         }
         const floaters = [];
@@ -1171,11 +1171,11 @@
                 floaters.push(player);
                 continue;
             }
-            const currColors = (_d = (_c = player.colors) === null || _c === void 0 ? void 0 : _c.slice(-2).join("")) !== null && _d !== void 0 ? _d : '';
-            if (currColors === 'ww' || currColors === 'bb') {
+            const currColors = (_d = (_c = player.colors) === null || _c === void 0 ? void 0 : _c.slice(-2).join("")) !== null && _d !== void 0 ? _d : "";
+            if (currColors === "ww" || currColors === "bb") {
                 const pairableByColor = others.find((p) => {
                     var _a, _b;
-                    const oppColors = (_b = (_a = p.colors) === null || _a === void 0 ? void 0 : _a.slice(-2).join("")) !== null && _b !== void 0 ? _b : '';
+                    const oppColors = (_b = (_a = p.colors) === null || _a === void 0 ? void 0 : _a.slice(-2).join("")) !== null && _b !== void 0 ? _b : "";
                     return ((currColors === "ww" && oppColors !== "ww") ||
                         (currColors === "bb" && oppColors !== "bb"));
                 });
@@ -1210,7 +1210,7 @@
         }
         // TODO: maybe also try finding on the lower half
         if (i < 0 || i >= stayers.length) {
-            console.debug('slice is odd, but cannot find a possible floater');
+            console.debug("slice is odd, but cannot find a possible floater");
         }
         return floaters;
     }
@@ -1276,25 +1276,25 @@
         let pairs = [];
         let debugPairs = [];
         for (let i = 0; i < playerArray.length; i++) {
-            const curr = playerArray[i];
+            const cur = playerArray[i];
             const next = playerArray.slice(i + 1);
-            const isFloater = floatersByScore[curr.score].map((p) => p.id).includes(curr.id);
+            const isFloater = floatersByScore[cur.score]
+                .map((p) => p.id)
+                .includes(cur.id);
             for (let j = 0; j < next.length; j++) {
                 const opp = next[j];
-                if (curr.hasOwnProperty("avoid") && curr.avoid.includes(opp.id)) {
+                if (cur.hasOwnProperty("avoid") && cur.avoid.includes(opp.id)) {
                     continue;
                 }
-                const slicePlayers = slicePlayersByScore[isFloater ? opp.score : curr.score];
+                const slicePlayers = slicePlayersByScore[isFloater ? opp.score : cur.score];
                 const halfway = Math.floor((slicePlayers.length + 1) / 2);
-                let debugWt = [
-                    [curr.id, opp.id, isFloater, slicePlayers]
-                ];
-                const currIndex = slicePlayers.findIndex((p) => p.id === curr.id);
+                let debugWt = [[cur.id, opp.id, isFloater, slicePlayers]];
+                const currIndex = slicePlayers.findIndex((p) => p.id === cur.id);
                 const oppIndex = slicePlayers.findIndex((p) => p.id === opp.id);
                 let wt = 0;
                 let wtt = 0;
                 // prioritize pair with higher total score
-                const scoreSumIndex = scoreSums.findIndex((s) => s === curr.score + opp.score);
+                const scoreSumIndex = scoreSums.findIndex((s) => s === cur.score + opp.score);
                 wt = 14 * Math.log10(scoreSumIndex + 1);
                 debugWt.push(["score", wt]);
                 if (currIndex > -1 && oppIndex > -1) {
@@ -1324,10 +1324,9 @@
                         ]);
                     }
                     if (colors) {
-                        const colorScore = curr.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
+                        const colorScore = cur.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
                         const oppScore = opp.colors.reduce((sum, color) => (color === "w" ? sum + 1 : sum - 1), 0);
-                        if (curr.colors.length > 1 &&
-                            curr.colors.slice(-2).join("") === "ww") {
+                        if (cur.colors.length > 1 && cur.colors.slice(-2).join("") === "ww") {
                             if (opp.colors.slice(-2).join("") === "ww") {
                                 continue;
                             }
@@ -1340,8 +1339,8 @@
                                 debugWt.push(["colors", "222", wtt]);
                             }
                         }
-                        else if (curr.colors.length > 1 &&
-                            curr.colors.slice(-2).join("") === "bb") {
+                        else if (cur.colors.length > 1 &&
+                            cur.colors.slice(-2).join("") === "bb") {
                             if (opp.colors.slice(-2).join("") === "bb") {
                                 continue;
                             }
@@ -1355,8 +1354,38 @@
                             }
                         }
                         else {
-                            wtt = 1.25 / Math.log10(Math.abs(colorScore - oppScore) + 2);
-                            debugWt.push(["colors", "555", wtt]);
+                            if (opp.colors.length > 1 &&
+                                opp.colors.slice(-2).join("") === "ww") {
+                                if (cur.colors.slice(-2).join("") === "ww") {
+                                    continue;
+                                }
+                                else if (cur.colors.slice(-2).join("") === "bb") {
+                                    wtt = 8;
+                                    debugWt.push(["colors", "555", wtt]);
+                                }
+                                else {
+                                    wtt = 2 / Math.log10(Math.abs(oppScore) + 2);
+                                    debugWt.push(["colors", "666", wtt]);
+                                }
+                            }
+                            else if (opp.colors.length > 1 &&
+                                opp.colors.slice(-2).join("") === "bb") {
+                                if (cur.colors.slice(-2).join("") === "bb") {
+                                    continue;
+                                }
+                                else if (cur.colors.slice(-2).join("") === "ww") {
+                                    wtt = 7;
+                                    debugWt.push(["colors", "777", wtt]);
+                                }
+                                else {
+                                    wtt = 2 / Math.log10(Math.abs(oppScore) + 2);
+                                    debugWt.push(["colors", "888", wtt]);
+                                }
+                            }
+                            else {
+                                wtt = 1.25 / Math.log10(Math.abs(colorScore - oppScore) + 2);
+                                debugWt.push(["colors", "999", wtt]);
+                            }
                         }
                         wt += wtt;
                     }
@@ -1369,9 +1398,9 @@
                     debugWt.push(["rated", wt]);
                 }
                 if (opp.hasOwnProperty("receivedBye") && opp.receivedBye) {
-                    const currGroupIndex = scoreGroups.findIndex((s) => s === curr.score);
+                    const curGroupIndex = scoreGroups.findIndex((s) => s === cur.score);
                     const oppGroupIndex = scoreGroups.findIndex((s) => s === opp.score);
-                    const scoreGroupDiff = Math.abs(currGroupIndex - oppGroupIndex);
+                    const scoreGroupDiff = Math.abs(curGroupIndex - oppGroupIndex);
                     if (scoreGroupDiff < 2) {
                         wtt = 1.5 / Math.log10(scoreGroupDiff + 2);
                         wt += wtt;
@@ -1383,8 +1412,8 @@
                         debugWt.push(["bye with high diff", wtt]);
                     }
                 }
-                pairs.push([curr.index, opp.index, wt]);
-                debugPairs.push([curr.index, opp.index, wt, debugWt]);
+                pairs.push([cur.index, opp.index, wt]);
+                debugPairs.push([cur.index, opp.index, wt, debugWt]);
             }
         }
         if (pairs.length === 0) {
