@@ -1214,9 +1214,9 @@
             sgps[sg] = playerArray.filter((p) => p.score === sg);
             return sgps;
         }, {});
-        console.log("score sums", scoreSums);
-        console.log("score groups", scoreGroups);
-        console.log("scoreGroupPlayers", scoreGroupPlayers);
+        console.debug("score sums", scoreSums);
+        console.debug("score groups", scoreGroups);
+        console.debug("scoreGroupPlayers", scoreGroupPlayers);
         // find floaters by each score group
         const reversedScoreGroups = [...scoreGroups].reverse();
         let floatersByScore = {};
@@ -1345,10 +1345,10 @@
             return [];
         }
         const blossomPairs = blossom$1(pairs, true);
-        console.log("pairings input players", playerArray);
-        console.log("debug pairings pairs", debugPairs.sort((a, b) => b[2] - a[2]));
-        console.log("pairings pairs", pairs);
-        console.log("blossomPairs", blossomPairs);
+        console.debug("pairings input players", playerArray);
+        console.debug("debug pairings pairs", debugPairs.sort((a, b) => b[2] - a[2]));
+        console.debug("pairings pairs", pairs);
+        console.debug("blossomPairs", blossomPairs);
         let playerCopy = [...playerArray];
         let byeArray = [];
         let match = 1;
